@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
       Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
       categoryRepository.save(categorySaved);
     } else {
-      throw new com.example.exception.BadRequestException(FIELD_INVALID);
+      throw new BadRequestException(FIELD_INVALID);
     }
   }
 
