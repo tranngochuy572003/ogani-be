@@ -1,5 +1,7 @@
 package com.example.service.impl;
 
+import com.example.entity.User;
+import com.example.mapper.UserMapper;
 import com.example.util.AppUtil;
 import com.example.dto.CategoryDto;
 import com.example.entity.Category;
@@ -77,8 +79,27 @@ public class CategoryServiceImpl implements CategoryService {
     if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
       throw new BadRequestException("Name is invalid");
     }
-    Category category = CategoryMapper.toEntity(categoryDto);
+    Category category= new Category();
+    CategoryMapper.toEntity(category,categoryDto);
     categoryRepository.save(category);
+  }
+
+  @Override
+  public void updateCategory(String id, CategoryDto categoryDto) {
+    Optional<Category> optionalCategory = categoryRepository.findById(id);
+    if (optionalCategory.isPresent()) {
+      Category category = optionalCategory.get();
+      if(AppUtil.containsSpecialCharacters(categoryDto.getType())){
+        throw new BadRequestException("Type is invalid");
+      }
+      if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
+        throw new BadRequestException("Name is invalid");
+      }
+      Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
+      categoryRepository.save(categorySaved);
+    } else {
+      throw new com.example.exception.BadRequestException("Id is invalid");
+    }
   }
 
 
