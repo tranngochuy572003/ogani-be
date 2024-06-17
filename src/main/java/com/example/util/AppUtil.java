@@ -4,6 +4,9 @@ import com.example.exception.BadRequestException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -20,16 +23,13 @@ public class AppUtil {
     return matcher.find();
   }
 
-  public static Date checkDateValid(String date) {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(PATTERN);
-
+  public static LocalDate checkDateValid(String date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN);
     try {
-      return simpleDateFormat.parse(date);
-
-    } catch (DateTimeParseException | ParseException e) {
+      return LocalDate.parse(date, formatter);
+    } catch (DateTimeParseException e) {
       throw new BadRequestException(FIELD_INVALID);
     }
-
   }
 
 }

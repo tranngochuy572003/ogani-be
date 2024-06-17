@@ -32,9 +32,9 @@ public class UserController {
   }
 
   @PostMapping("/add")
-  public ResponseEntity<String> addUser(@RequestBody User user) {
-    if(userService.checkUserExist(user.getUsername())){
-      userService.addUser(user);
+  public ResponseEntity<String> addUser(@RequestBody UserDto userDto) {
+    if(userService.existsByUsername(userDto.getUserName())){
+      userService.addUser(userDto);
     }
     return new ResponseEntity<>(ITEM_CREATED_SUCCESS, HttpStatus.CREATED);
   }

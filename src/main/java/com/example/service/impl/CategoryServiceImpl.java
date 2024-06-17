@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public List<Category> findByCreatedDate(String date) {
-    Date startDate  = AppUtil.checkDateValid(date);
-    Date endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000 - 1);
-    return categoryRepository.findByCreatedDateBetween(startDate, endDate);
+  public List<Category> findByCreatedDate(LocalDate localDate) {
+    return categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay());
   }
 
   @Override

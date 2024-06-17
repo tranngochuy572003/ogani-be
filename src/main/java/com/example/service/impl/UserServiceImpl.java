@@ -29,12 +29,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public void addUser(User user) {
-    if (user.getPassword().isEmpty() || user.getUsername().isEmpty() || user.getFullName().isEmpty()) {
+  public void addUser(UserDto userDto) {
+    if (userDto.getPassword().isEmpty() || userDto.getUserName().isEmpty() || userDto.getFullName().isEmpty()) {
       throw new BadRequestException("Field required is not blank.");
     }
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    user.setPassword(encoder.encode(user.getPassword()));
+    User user =new User();
+    UserMapper.toEntity(user, userDto);
     userRepository.save(user);
   }
 
@@ -70,12 +70,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     Optional<User> optionalUser = userRepository.findUserById(id);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
-
       User userSaved = UserMapper.toEntity(user, userDto);
-
-      BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-      user.setPassword(encoder.encode(user.getPassword()));
-
       userRepository.save(userSaved);
     } else {
       throw new com.example.exception.BadRequestException("Id is invalid");
@@ -85,7 +80,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   @Override
   public User findUserByEmail(String email) {
     User user = userRepository.findUserByEmail(email);
-
     if (user == null) {
       throw new com.example.exception.BadRequestException("Email is invalid");
     }
@@ -94,15 +88,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   // existsByUsername
   @Override
-  public boolean checkUserExist(String username) {
+  public boolean existsByUsername(String username) {
     if (userRepository.existsByUserName(username)) {
       throw new BadRequestException("UserName existed");
     }
     return true;
   }
-
-
-
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -110,7 +101,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     if (user == null) {
       throw new UsernameNotFoundException(email);
     }
-
     return user;
   }
 

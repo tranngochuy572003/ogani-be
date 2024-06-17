@@ -4,6 +4,7 @@ import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserMapper {
 
@@ -20,8 +21,11 @@ public class UserMapper {
   }
 
   public static User toEntity(User user ,UserDto userDto) {
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     user.setActive(userDto.isActive());
-    user.setPassword(userDto.getPassword());
+    userDto.setPassword(encoder.encode(userDto.getPassword()));
+
     user.setFullName(userDto.getFullName());
     user.setPhoneNumber(userDto.getPhoneNumber());
     user.setRole(userDto.getRole());

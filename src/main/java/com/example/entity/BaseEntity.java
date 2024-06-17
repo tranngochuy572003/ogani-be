@@ -8,6 +8,8 @@ import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,11 +26,11 @@ public class BaseEntity {
 
   @Column(name = "createdDate", updatable = false)
   @CreationTimestamp
-  private Date createdDate ;
+  private LocalDateTime createdDate ;
 
   @Column(name="modifiedDate",updatable = false)
   @UpdateTimestamp
-  private Date modifiedDate ;
+  private LocalDateTime modifiedDate ;
 
   @Column(name="createdBy")
   @CreatedBy

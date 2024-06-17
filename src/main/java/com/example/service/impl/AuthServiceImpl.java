@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
   @Autowired
   private PasswordEncoder passwordEncoder;
   @Autowired
-  private com.example.securityconfig.JwtTokenProvider jwtTokenProvider;
+  private com.example.config.JwtTokenProvider jwtTokenProvider;
 
 
   public boolean checkPassword(String email, String rawPassword) {
