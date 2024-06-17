@@ -1,5 +1,6 @@
 package com.example.service.impl;
 
+import com.example.config.JwtTokenProvider;
 import com.example.dto.UserDtoLogin;
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
@@ -20,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
   @Autowired
   private PasswordEncoder passwordEncoder;
   @Autowired
-  private com.example.config.JwtTokenProvider jwtTokenProvider;
+  private JwtTokenProvider jwtTokenProvider;
 
 
   public boolean checkPassword(String email, String rawPassword) {

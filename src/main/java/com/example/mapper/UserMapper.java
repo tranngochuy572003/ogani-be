@@ -24,8 +24,7 @@ public class UserMapper {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     user.setActive(userDto.isActive());
-    userDto.setPassword(encoder.encode(userDto.getPassword()));
-
+    user.setPassword(encoder.encode(userDto.getPassword()));
     user.setFullName(userDto.getFullName());
     user.setPhoneNumber(userDto.getPhoneNumber());
     user.setRole(userDto.getRole());
