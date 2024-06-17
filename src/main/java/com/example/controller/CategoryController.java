@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.dto.CategoryDto;
-import com.example.dto.UserDto;
 import com.example.entity.Category;
 import com.example.service.CategoryService;
 import com.example.util.AppUtil;
@@ -9,10 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
 import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
 
