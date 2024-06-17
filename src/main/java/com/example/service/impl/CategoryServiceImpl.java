@@ -1,25 +1,23 @@
 package com.example.service.impl;
 
-import com.example.util.AppUtil;
 import com.example.dto.CategoryDto;
 import com.example.entity.Category;
 import com.example.exception.BadRequestException;
 import com.example.mapper.CategoryMapper;
 import com.example.repository.CategoryRepository;
 import com.example.service.CategoryService;
+import com.example.util.AppUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.common.MessageConstant.*;
+import static com.example.common.MessageConstant.FIELD_INVALID;
+import static com.example.common.MessageConstant.VALUE_EXISTED;
 
 
 @Service
@@ -77,8 +75,31 @@ public class CategoryServiceImpl implements CategoryService {
     if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
       throw new BadRequestException("Name is invalid");
     }
-    Category category = CategoryMapper.toEntity(categoryDto);
+    Category category= new Category();
+    CategoryMapper.toEntity(category,categoryDto);
     categoryRepository.save(category);
+  }
+
+  @Override
+  public void updateCategory(String id, CategoryDto categoryDto) {
+    Optional<Category> optionalCategory = categoryRepository.findById(id);
+    if (optionalCategory.isPresent()) {
+      Category category = optionalCategory.get();
+      if(AppUtil.containsSpecialCharacters(categoryDto.getType())){
+        throw new BadRequestException(FIELD_INVALID);
+      }
+      if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
+        throw new BadRequestException(FIELD_INVALID);
+      }
+      List<Category> categoryList = categoryRepository.findByName(categoryDto.getName());
+      if(categoryList.size()!=0){
+        throw new BadRequestException(VALUE_EXISTED);
+      }
+      Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
+      categoryRepository.save(categorySaved);
+    } else {
+      throw new BadRequestException(FIELD_INVALID);
+    }
   }
 
 

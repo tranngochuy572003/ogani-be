@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
+import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -55,5 +57,11 @@ public class CategoryController {
   public ResponseEntity<String> addCategory(@RequestBody CategoryDto categoryDto) {
     categoryService.addCategory(categoryDto);
     return new ResponseEntity<>(ITEM_CREATED_SUCCESS, HttpStatus.OK);
+  }
+
+  @PatchMapping ("/update/{id}")
+  public ResponseEntity<String> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
+    categoryService.updateCategory(id, categoryDto);
+    return new ResponseEntity<>(ITEM_UPDATED_SUCCESS, HttpStatus.OK);
   }
 }

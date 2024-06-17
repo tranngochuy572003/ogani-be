@@ -8,4 +8,6 @@ public class MessageConstant {
   public static final String ITEM_UPDATED_SUCCESS="Item updated successfully";
   public static final String ITEM_DELETED_SUCCESS="Item deleted successfully";
   public static final String FIELD_UPDATED_SUCCESS="Field is updated successfully";
+  public static final String VALUE_EXISTED="Value existed";
+
 }
