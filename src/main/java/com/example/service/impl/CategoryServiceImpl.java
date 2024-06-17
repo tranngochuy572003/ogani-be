@@ -102,5 +102,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
   }
 
-
+  @Override
+  public List<Category> getCategoriesActive(boolean active) {
+    return categoryRepository.findCategoriesByIsActive(active);
+  }
 }
