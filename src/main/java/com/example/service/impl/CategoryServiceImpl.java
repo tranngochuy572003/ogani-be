@@ -19,14 +19,12 @@ import java.util.Optional;
 import static com.example.common.MessageConstant.FIELD_INVALID;
 import static com.example.common.MessageConstant.VALUE_EXISTED;
 
-
 @Service
 @Data
 @AllArgsConstructor
-
 public class CategoryServiceImpl implements CategoryService {
   @Autowired
-  private CategoryRepository categoryRepository ;
+  private CategoryRepository categoryRepository;
 
   @Override
   public List<Category> getAllCategories() {
@@ -35,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public List<Category> findByType(String type) {
-    if(AppUtil.containsSpecialCharacters(type)){
+    if (AppUtil.containsSpecialCharacters(type)) {
       throw new BadRequestException(FIELD_INVALID);
     }
     return categoryRepository.findByType(type);
@@ -43,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public List<Category> findByName(String name) {
-    if(AppUtil.containsSpecialCharacters(name)){
+    if (AppUtil.containsSpecialCharacters(name)) {
       throw new BadRequestException(FIELD_INVALID);
     }
     return categoryRepository.findByName(name);
@@ -56,27 +54,27 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public Category findById(String id) {
-    if(AppUtil.containsSpecialCharacters(id)){
+    if (AppUtil.containsSpecialCharacters(id)) {
       throw new BadRequestException(FIELD_INVALID);
     }
     Optional<Category> categoryOptional = categoryRepository.findById(id);
-    if(categoryOptional.isPresent()){
+    if (categoryOptional.isPresent()) {
       return categoryOptional.get();
-    }else {
-      throw  new BadRequestException(FIELD_INVALID);
+    } else {
+      throw new BadRequestException(FIELD_INVALID);
     }
   }
 
   @Override
   public void addCategory(CategoryDto categoryDto) {
-    if(AppUtil.containsSpecialCharacters(categoryDto.getType())){
+    if (AppUtil.containsSpecialCharacters(categoryDto.getType())) {
       throw new BadRequestException("Type is invalid");
     }
-    if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
+    if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
       throw new BadRequestException("Name is invalid");
     }
-    Category category= new Category();
-    CategoryMapper.toEntity(category,categoryDto);
+    Category category = new Category();
+    CategoryMapper.toEntity(category, categoryDto);
     categoryRepository.save(category);
   }
 
@@ -85,14 +83,14 @@ public class CategoryServiceImpl implements CategoryService {
     Optional<Category> optionalCategory = categoryRepository.findById(id);
     if (optionalCategory.isPresent()) {
       Category category = optionalCategory.get();
-      if(AppUtil.containsSpecialCharacters(categoryDto.getType())){
+      if (AppUtil.containsSpecialCharacters(categoryDto.getType())) {
         throw new BadRequestException(FIELD_INVALID);
       }
-      if(AppUtil.containsSpecialCharacters(categoryDto.getName())){
+      if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
         throw new BadRequestException(FIELD_INVALID);
       }
       List<Category> categoryList = categoryRepository.findByName(categoryDto.getName());
-      if(categoryList.size()!=0){
+      if (categoryList.size() != 0) {
         throw new BadRequestException(VALUE_EXISTED);
       }
       Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
@@ -103,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public List<Category> getCategoriesActive(boolean active) {
-    return categoryRepository.findCategoriesByIsActive(active);
+  public List<CategoryDto> getCategoriesActive() {
+    return CategoryMapper.toListDto(categoryRepository.findCategoriesByActive());
   }
 }
