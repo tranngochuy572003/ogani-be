@@ -16,8 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.common.MessageConstant.FIELD_INVALID;
-import static com.example.common.MessageConstant.VALUE_EXISTED;
+import static com.example.common.MessageConstant.*;
 
 @Service
 @Data
@@ -105,5 +104,15 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public List<CategoryDto> getCategoriesActive() {
     return CategoryMapper.toListDto(categoryRepository.findCategoriesByActive());
+  }
+
+  @Override
+  public void deleteCategory(String id) {
+    Optional<Category> optionalCategory = categoryRepository.findById(id);
+    if (optionalCategory.isPresent()) {
+      categoryRepository.deleteById(id);
+    } else {
+      throw new BadRequestException(ITEM_NO_EXIST);
+    }
   }
 }

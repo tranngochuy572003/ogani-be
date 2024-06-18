@@ -63,4 +63,12 @@ public class CategoryController {
     List<CategoryDto> categories = categoryService.getCategoriesActive();
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
+
+  @DeleteMapping ("/deleteCategory/{id}")
+  public ResponseEntity<ApiResponse> deleteCategory(@PathVariable String id) {
+    categoryService.deleteCategory(id);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_DELETED_SUCCESS);
+    return ResponseEntity.ok(response);
+  }
 }

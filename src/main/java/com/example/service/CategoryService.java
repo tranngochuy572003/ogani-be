@@ -14,4 +14,6 @@ public interface CategoryService {
   void addCategory(CategoryDto categoryDto);
   void updateCategory(String id , CategoryDto categoryDto) ;
   List<CategoryDto> getCategoriesActive() ;
+  void deleteCategory(String id) ;
+
 }
