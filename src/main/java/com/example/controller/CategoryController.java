@@ -47,12 +47,16 @@ public class CategoryController {
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryDto categoryDto) {
     categoryService.addCategory(categoryDto);
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value()));
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_CREATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
   @PatchMapping("/update/{id}")
   public ResponseEntity<ApiResponse> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
     categoryService.updateCategory(id, categoryDto);
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value()));
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_UPDATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
   @GetMapping("/getCategoriesActive")
   public ResponseEntity<ApiResponse> getCategoriesActive() {
