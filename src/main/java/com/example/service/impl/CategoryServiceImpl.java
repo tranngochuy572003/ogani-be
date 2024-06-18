@@ -2,7 +2,6 @@ package com.example.service.impl;
 
 import com.example.dto.CategoryDto;
 import com.example.entity.Category;
-import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.mapper.CategoryMapper;
 import com.example.repository.CategoryRepository;
@@ -17,8 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.common.MessageConstant.FIELD_INVALID;
-import static com.example.common.MessageConstant.VALUE_EXISTED;
+import static com.example.common.MessageConstant.*;
 
 @Service
 @Data
@@ -114,7 +112,7 @@ public class CategoryServiceImpl implements CategoryService {
     if (optionalCategory.isPresent()) {
       categoryRepository.deleteById(id);
     } else {
-      throw new BadRequestException(FIELD_INVALID);
+      throw new BadRequestException(ITEM_NO_EXIST);
     }
   }
 }
