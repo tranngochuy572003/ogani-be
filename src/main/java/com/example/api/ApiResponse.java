@@ -1,43 +1,12 @@
 package com.example.api;
 
-public class ApiResponse<T> {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class ApiResponse {
   private int statusCode;
   private String message;
-  private T data;
-
-  public ApiResponse(int statusCode, String message, T data) {
-    this.statusCode = statusCode;
-    this.message = message;
-    this.data = data;
-  }
-
-  public ApiResponse(int statusCode, T data) {
-    this.statusCode = statusCode;
-    this.message="Successfully";
-    this.data = data;
-  }
-
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public T getData() {
-    return data;
-  }
-
-  public void setData(T data) {
-    this.data = data;
-  }
+  private Object data;
 }
