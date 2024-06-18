@@ -3,8 +3,6 @@ package com.example.api;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
-
 @Data
 @AllArgsConstructor
 public class ApiResponse {
