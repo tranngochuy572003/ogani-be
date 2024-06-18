@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
+import static com.example.common.MessageConstant.*;
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
@@ -46,13 +47,13 @@ public class CategoryController {
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryDto categoryDto) {
     categoryService.addCategory(categoryDto);
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value()));
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),ITEM_CREATED_SUCCESS));
   }
   @PatchMapping("/update/{id}")
   public ResponseEntity<ApiResponse> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
     categoryService.updateCategory(id, categoryDto);
 
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value()));
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),ITEM_UPDATED_SUCCESS));
   }
   @GetMapping("/getCategoriesActive")
   public ResponseEntity<ApiResponse> getCategoriesActive() {

@@ -21,6 +21,6 @@ public class ApiResponse {
   public ApiResponse(int statusCode) {
     this.statusCode = statusCode;
     this.data = "No contents";
-    this.message=ITEM_UPDATED_SUCCESS;
+    this.message="Successfully";
   }
 }
