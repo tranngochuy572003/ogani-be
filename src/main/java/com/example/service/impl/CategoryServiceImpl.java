@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.dto.CategoryDto;
 import com.example.entity.Category;
+import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.mapper.CategoryMapper;
 import com.example.repository.CategoryRepository;
@@ -105,5 +106,15 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public List<CategoryDto> getCategoriesActive() {
     return CategoryMapper.toListDto(categoryRepository.findCategoriesByActive());
+  }
+
+  @Override
+  public void deleteCategory(String id) {
+    Optional<Category> optionalCategory = categoryRepository.findById(id);
+    if (optionalCategory.isPresent()) {
+      categoryRepository.deleteById(id);
+    } else {
+      throw new BadRequestException(FIELD_INVALID);
+    }
   }
 }
