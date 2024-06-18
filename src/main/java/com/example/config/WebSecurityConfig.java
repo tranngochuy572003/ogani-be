@@ -18,8 +18,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig  {
-
-
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
     return new JwtAuthenticationFilter();
@@ -32,7 +30,6 @@ public class WebSecurityConfig  {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    // Password encoder, để Spring Security sử dụng mã hóa mật khẩu người dùng
     return new BCryptPasswordEncoder();
   }
 
@@ -53,16 +50,13 @@ public class WebSecurityConfig  {
             .csrf(csrf -> csrf.disable())  // Disable CSRF protection
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/user/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll() // Permit all GET requests for categories
+                    .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
-
-
-
-
 }
 
