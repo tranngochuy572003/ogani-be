@@ -27,39 +27,41 @@ public class CategoryServiceImpl implements CategoryService {
   private CategoryRepository categoryRepository;
 
   @Override
-  public List<Category> getAllCategories() {
-    return categoryRepository.findAll();
+  public List<CategoryDto> getAllCategories() {
+    return CategoryMapper.toListDto(categoryRepository.findAll());
   }
 
   @Override
-  public List<Category> findByType(String type) {
+  public List<CategoryDto> findByType(String type) {
     if (AppUtil.containsSpecialCharacters(type)) {
       throw new BadRequestException(FIELD_INVALID);
     }
-    return categoryRepository.findByType(type);
-  }
 
+    return CategoryMapper.toListDto(categoryRepository.findByType(type));
+
+  }
   @Override
-  public List<Category> findByName(String name) {
+  public List<CategoryDto> findByName(String name) {
     if (AppUtil.containsSpecialCharacters(name)) {
       throw new BadRequestException(FIELD_INVALID);
     }
-    return categoryRepository.findByName(name);
+    return CategoryMapper.toListDto(categoryRepository.findByName(name));
   }
 
   @Override
-  public List<Category> findByCreatedDate(LocalDate localDate) {
-    return categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay());
+  public List<CategoryDto> findByCreatedDate(LocalDate localDate) {
+    return CategoryMapper.toListDto(categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
   }
 
   @Override
-  public Category findById(String id) {
+  public CategoryDto findById(String id) {
     if (AppUtil.containsSpecialCharacters(id)) {
       throw new BadRequestException(FIELD_INVALID);
     }
     Optional<Category> categoryOptional = categoryRepository.findById(id);
     if (categoryOptional.isPresent()) {
-      return categoryOptional.get();
+      CategoryDto categoryDto= new CategoryDto();
+      return CategoryMapper.toDto(categoryOptional.get(),categoryDto);
     } else {
       throw new BadRequestException(FIELD_INVALID);
     }

@@ -1,62 +1,66 @@
 package com.example.controller;
 
+import com.example.api.ApiResponse;
 import com.example.dto.CategoryDto;
-import com.example.entity.Category;
 import com.example.service.CategoryService;
 import com.example.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
-import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
-import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
+import static com.example.common.MessageConstant.*;
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
   @Autowired
   private CategoryService categoryService;
   @GetMapping("/getCategoriesByType/{type}")
-  public ResponseEntity<?> getCategoriesByType(@PathVariable String type) {
-    List<Category> categories = categoryService.findByType(type);
-    return new ResponseEntity<>(categories, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> getCategoriesByType(@PathVariable String type) {
+    List<CategoryDto> categories = categoryService.findByType(type);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
   @GetMapping("/getAllCategories")
-  public ResponseEntity<?> getAllCategories() {
-    List<Category> categories = categoryService.getAllCategories();
-    return new ResponseEntity<>(categories, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> getAllCategories() {
+    List<CategoryDto> categories = categoryService.getAllCategories();
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
   @GetMapping("/getById/{id}")
-  public ResponseEntity<?> getById(@PathVariable String id) {
-    Category category = categoryService.findById(id);
-    return new ResponseEntity<>(category, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> getById(@PathVariable String id) {
+    CategoryDto categoryDto = categoryService.findById(id);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categoryDto));
   }
   @GetMapping("/getByName/{name}")
-  public ResponseEntity<?> getByName(@PathVariable String name) {
-    List<Category> categories = categoryService.findByName(name);
-    return new ResponseEntity<>(categories, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> getByName(@PathVariable String name) {
+    List<CategoryDto> categories = categoryService.findByName(name);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
-  @GetMapping("/getCreatedDate/{date}")
-  public ResponseEntity<?> getCreatedDate(@PathVariable String date) throws ParseException {
-    LocalDate localDate = AppUtil.checkDateValid(date);
-    List<Category> categories = categoryService.findByCreatedDate(localDate);
-    return new ResponseEntity<>(categories, HttpStatus.OK);
+  @GetMapping("/getCreatedDate/{createdDate}")
+  public ResponseEntity<ApiResponse> getCreatedDate(@PathVariable String createdDate) throws ParseException {
+    LocalDate localDate = AppUtil.checkDateValid(createdDate);
+    List<CategoryDto> categories = categoryService.findByCreatedDate(localDate);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
   @PostMapping("/add")
-  public ResponseEntity<String> addCategory(@RequestBody CategoryDto categoryDto) {
+  public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryDto categoryDto) {
     categoryService.addCategory(categoryDto);
-    return new ResponseEntity<>(ITEM_CREATED_SUCCESS, HttpStatus.OK);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_CREATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
   @PatchMapping("/update/{id}")
-  public ResponseEntity<String> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
+  public ResponseEntity<ApiResponse> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
     categoryService.updateCategory(id, categoryDto);
-    return new ResponseEntity<>(ITEM_UPDATED_SUCCESS, HttpStatus.OK);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_UPDATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
-  @GetMapping ("/getCategoriesActive")
-  public ResponseEntity<?> getCategoriesActive() {
+  @GetMapping("/getCategoriesActive")
+  public ResponseEntity<ApiResponse> getCategoriesActive() {
     List<CategoryDto> categories = categoryService.getCategoriesActive();
-    return new ResponseEntity<>(categories, HttpStatus.OK);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
 }
