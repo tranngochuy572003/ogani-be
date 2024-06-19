@@ -40,11 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
 
   }
   @Override
-  public List<CategoryDto> findByName(String name) {
+  public CategoryDto findByName(String name) {
     if (AppUtil.containsSpecialCharacters(name)) {
       throw new BadRequestException(FIELD_INVALID);
     }
-    return CategoryMapper.toListDto(categoryRepository.findByName(name));
+    CategoryDto categoryDto = new CategoryDto();
+    return CategoryMapper.toDto(categoryRepository.findByName(name),categoryDto);
   }
 
   @Override
@@ -84,16 +85,15 @@ public class CategoryServiceImpl implements CategoryService {
     Optional<Category> optionalCategory = categoryRepository.findById(id);
     if (optionalCategory.isPresent()) {
       Category category = optionalCategory.get();
-      if (AppUtil.containsSpecialCharacters(categoryDto.getType())) {
+      if (AppUtil.containsSpecialCharacters(categoryDto.getType())
+              ||AppUtil.containsSpecialCharacters(categoryDto.getName())) {
         throw new BadRequestException(FIELD_INVALID);
       }
-      if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
-        throw new BadRequestException(FIELD_INVALID);
-      }
-      List<Category> categoryList = categoryRepository.findByName(categoryDto.getName());
-      if (categoryList.size() != 0) {
+      boolean existCategory= categoryRepository.findByName(categoryDto.getName())!=null;
+      if (!category.getName().equals(categoryDto.getName()) && existCategory) {
         throw new BadRequestException(VALUE_EXISTED);
       }
+
       Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
       categoryRepository.save(categorySaved);
     } else {

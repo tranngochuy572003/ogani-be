@@ -35,7 +35,7 @@ public class CategoryController {
   }
   @GetMapping("/getByName/{name}")
   public ResponseEntity<ApiResponse> getByName(@PathVariable String name) {
-    List<CategoryDto> categories = categoryService.findByName(name);
+    CategoryDto categories = categoryService.findByName(name);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
   @GetMapping("/getCreatedDate/{createdDate}")
