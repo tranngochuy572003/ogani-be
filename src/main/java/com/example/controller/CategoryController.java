@@ -35,8 +35,8 @@ public class CategoryController {
   }
   @GetMapping("/getByName/{name}")
   public ResponseEntity<ApiResponse> getByName(@PathVariable String name) {
-    CategoryDto categories = categoryService.findByName(name);
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
+    CategoryDto categoryDto = categoryService.findByName(name);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categoryDto));
   }
   @GetMapping("/getCreatedDate/{createdDate}")
   public ResponseEntity<ApiResponse> getCreatedDate(@PathVariable String createdDate) throws ParseException {
