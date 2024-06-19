@@ -22,10 +22,6 @@ public class Product extends BaseEntity {
   @Column
   private String  description;
   @Column
-  private String  availability;
-  @Column
-  private String  shipping;
-  @Column
   private String  information;
   @Column
   private String price ;

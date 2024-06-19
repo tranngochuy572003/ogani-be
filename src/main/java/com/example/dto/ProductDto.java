@@ -14,8 +14,6 @@ public class ProductDto {
   private boolean isActive;
   private Long  inventory;
   private String  description;
-  private String  availability;
-  private String  shipping;
   private String  information;
   private String price ;
 

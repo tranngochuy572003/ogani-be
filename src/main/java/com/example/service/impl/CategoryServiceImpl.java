@@ -75,8 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
     if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
       throw new BadRequestException("Name is invalid");
     }
-    Category category = new Category();
-    CategoryMapper.toEntity(category, categoryDto);
+    Category category = CategoryMapper.toCreateEntity(categoryDto);
     categoryRepository.save(category);
   }
 
@@ -94,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
         throw new BadRequestException(VALUE_EXISTED);
       }
 
-      Category categorySaved = CategoryMapper.toEntity(category, categoryDto);
+      Category categorySaved = CategoryMapper.toUpdateEntity(category, categoryDto);
       categoryRepository.save(categorySaved);
     } else {
       throw new BadRequestException(FIELD_INVALID);
