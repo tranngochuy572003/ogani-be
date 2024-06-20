@@ -53,7 +53,7 @@ public class WebSecurityConfig  {
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/user/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/products/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN")
 
                     .anyRequest().authenticated()
             )

@@ -47,12 +47,7 @@ public class User extends BaseEntity implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-
-//    if (role == null || role.isEmpty()) {
-//      throw new IllegalArgumentException("Role cannot be null or empty");
-//    }
-//    return Collections.singleton(new SimpleGrantedAuthority(role));
+    return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
   }
 
   @Override

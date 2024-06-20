@@ -3,7 +3,6 @@ package com.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -15,6 +14,6 @@ public class ProductDto {
   private Long  inventory;
   private String  description;
   private String  information;
-  private String price ;
+  private Long price ;
 
 }
