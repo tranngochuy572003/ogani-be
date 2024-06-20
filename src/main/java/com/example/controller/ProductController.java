@@ -23,7 +23,7 @@ public class ProductController {
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addProduct(
           @RequestPart("productDto") ProductDto productDto,
-          @RequestParam("image") MultipartFile multipartFile) throws IOException {
+          @RequestParam("image") MultipartFile [] multipartFile) throws IOException {
       productService.addProduct(productDto, multipartFile);
       ApiResponse response = new ApiResponse(HttpStatus.OK.value());
       response.setMessage(ITEM_CREATED_SUCCESS);
