@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.api.ApiResponse;
-import com.example.dto.CategoryDto;
 import com.example.dto.ProductDto;
 import com.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;

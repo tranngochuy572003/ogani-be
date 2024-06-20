@@ -1,8 +1,7 @@
 package com.example.mapper;
 
-import com.example.dto.CategoryDto;
 import com.example.dto.ProductDto;
-import com.example.entity.Category;
+import com.example.entity.Image;
 import com.example.entity.Product;
 
 import java.util.ArrayList;
@@ -18,6 +17,13 @@ public class ProductMapper {
     productDto.setDescription(product.getDescription());
     productDto.setInformation(product.getInformation());
 
+    List<String> imageUrls = new ArrayList<>();
+    if (product.getImages() != null) {
+      for (Image image : product.getImages()) {
+        imageUrls.add(image.getUrlImg());
+      }
+    }
+    productDto.setImageList(imageUrls);
     return productDto;
   }
 
@@ -51,4 +57,5 @@ public class ProductMapper {
     }
     return productDtoList;
   }
+
 }
