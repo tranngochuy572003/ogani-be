@@ -1,7 +1,12 @@
 package com.example.mapper;
 
+import com.example.dto.CategoryDto;
 import com.example.dto.ProductDto;
+import com.example.entity.Category;
 import com.example.entity.Product;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductMapper {
   public static ProductDto toDto(Product product) {
@@ -37,5 +42,13 @@ public class ProductMapper {
     product.setInformation(productDto.getInformation());
 
     return product;
+  }
+
+  public static List<ProductDto> toListDto(List<Product> products) {
+    List<ProductDto> productDtoList  = new ArrayList<>();
+    for(Product product :products){
+      productDtoList.add(ProductMapper.toDto(product));
+    }
+    return productDtoList;
   }
 }

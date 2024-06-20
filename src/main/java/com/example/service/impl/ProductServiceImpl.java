@@ -52,4 +52,10 @@ public class ProductServiceImpl implements ProductService {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public List<ProductDto> getAllProducts() {
+    List<Product> productList = productRepository.findAll();
+    return ProductMapper.toListDto(productList);
+  }
 }

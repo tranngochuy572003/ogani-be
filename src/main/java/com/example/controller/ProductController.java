@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.api.ApiResponse;
+import com.example.dto.CategoryDto;
 import com.example.dto.ProductDto;
 import com.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
 
@@ -28,8 +30,12 @@ public class ProductController {
       ApiResponse response = new ApiResponse(HttpStatus.OK.value());
       response.setMessage(ITEM_CREATED_SUCCESS);
       return ResponseEntity.ok(response);
+  }
 
-
+  @GetMapping("/getAllProducts")
+  public ResponseEntity<ApiResponse> getAllProducts() {
+    List<ProductDto> products = productService.getAllProducts();
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),products));
   }
 
 }
