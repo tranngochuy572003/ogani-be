@@ -1,6 +1,7 @@
-package com.example.upload;
+package com.example.service.impl;
 
 import com.cloudinary.Cloudinary;
+import com.example.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadImpl implements FileUpload{
+public class FileUploadImpl implements FileUploadService {
 
     private final Cloudinary cloudinary;
     @Override
