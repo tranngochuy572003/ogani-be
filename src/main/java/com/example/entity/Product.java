@@ -24,7 +24,7 @@ public class Product extends BaseEntity {
   @Column
   private String  information;
   @Column
-  private String price ;
+  private Long price ;
 
   @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
   private List<Review> reviews;
