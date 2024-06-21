@@ -17,6 +17,6 @@ public class ProductDto {
   private String  description;
   private String  information;
   private Long price ;
+  private String category;
   private List<String> imageList;
-
 }

@@ -24,6 +24,7 @@ public class ProductMapper {
       }
     }
     productDto.setImageList(imageUrls);
+    productDto.setCategory(product.getCategory().getName());
     return productDto;
   }
 

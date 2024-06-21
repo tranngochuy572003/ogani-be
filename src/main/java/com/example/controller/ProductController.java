@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
+import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -35,6 +36,14 @@ public class ProductController {
   public ResponseEntity<ApiResponse> getAllProducts() {
     List<ProductDto> products = productService.getAllProducts();
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),products));
+  }
+
+  @PatchMapping("/update/{id}")
+  public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id, @RequestBody ProductDto productDto) {
+    productService.updateProduct(id, productDto);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_UPDATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
 
 }
