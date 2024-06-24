@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,23 +32,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     if (userDto.getPassword().isEmpty() || userDto.getUserName().isEmpty() || userDto.getFullName().isEmpty()) {
       throw new BadRequestException("Field required is not blank.");
     }
-    if(userDto.getIsActive()==null){
-      userDto.setIsActive(true);
-    }
     User user =UserMapper.toCreateEntity(userDto);
     userRepository.save(user);
   }
 
   @Override
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public List<UserDto> getAllUsers() {
+    return UserMapper.toListDto(userRepository.findAll());
   }
 
   @Override
-  public User getUserById(String id) {
-    Optional<User> user = userRepository.findById(id);
+  public UserDto getUserById(String id) {
+    Optional<User> user = userRepository.findUserById(id);
     if (user.isPresent()) {
-      return user.get();
+      return UserMapper.toDto(user.get());
     } else {
       throw new com.example.exception.BadRequestException("Email or Password is invalid");
     }
@@ -72,9 +68,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     Optional<User> optionalUser = userRepository.findUserById(id);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
-      if(userDto.getIsActive()==null){
-        userDto.setIsActive(true);
-      }
       User userSaved = UserMapper.toUpdateEntity(user, userDto);
       userRepository.save(userSaved);
     } else {

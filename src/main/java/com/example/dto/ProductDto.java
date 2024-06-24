@@ -1,14 +1,13 @@
 package com.example.dto;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ProductDto {
   private String nameProduct ;
@@ -20,4 +19,14 @@ public class ProductDto {
   private String category;
   private List<String> imageList;
 
+  public ProductDto(String nameProduct, Boolean isActive, Long inventory, String description, String information, Long price, String category, List<String> imageList) {
+    this.nameProduct = nameProduct;
+    this.isActive = Objects.requireNonNullElse(isActive, true);
+    this.inventory = inventory;
+    this.description = description;
+    this.information = information;
+    this.price = price;
+    this.category = category;
+    this.imageList = imageList;
   }
+}

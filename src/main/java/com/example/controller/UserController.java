@@ -1,11 +1,10 @@
 package com.example.controller;
 
 
-import com.example.service.AuthService;
-import com.example.service.impl.AuthServiceImpl;
+import com.example.api.ApiResponse;
 import com.example.dto.UserDto;
 import com.example.dto.UserDtoLogin;
-import com.example.entity.User;
+import com.example.service.AuthService;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,41 +25,47 @@ public class UserController {
   private AuthService authService;
 
   @PostMapping("/login")
-  public ResponseEntity<?> userLogin(@RequestBody UserDtoLogin userDtoLogin) {
+  public ResponseEntity<ApiResponse> userLogin(@RequestBody UserDtoLogin userDtoLogin) {
     String jwtToken = authService.isAuthenticated(userDtoLogin);
-    return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),jwtToken));
   }
 
   @PostMapping("/add")
-  public ResponseEntity<String> addUser(@RequestBody UserDto userDto) {
+  public ResponseEntity<ApiResponse> addUser(@RequestBody UserDto userDto) {
     if(userService.existsByUsername(userDto.getUserName())){
       userService.addUser(userDto);
     }
-    return new ResponseEntity<>(ITEM_CREATED_SUCCESS, HttpStatus.CREATED);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_CREATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping
-  public ResponseEntity<List<User>> userList() {
-    List<User> users = userService.getAllUsers();
-    return new ResponseEntity<>(users, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> userList() {
+    List<UserDto> users = userService.getAllUsers();
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),users));
   }
 
   @GetMapping("/get/{id}")
-  public ResponseEntity<User> getUser(@PathVariable String id) {
-    User user = userService.getUserById(id);
-    return new ResponseEntity<>(user, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> getUser(@PathVariable String id) {
+    UserDto userDto = userService.getUserById(id);
+    return ResponseEntity.ok(new ApiResponse (HttpStatus.OK.value(),userDto));
   }
 
   @PatchMapping("/update/{id}")
-  public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
+  public ResponseEntity<ApiResponse> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
     userService.updateUser(id, userDto);
-    return new ResponseEntity<>(ITEM_UPDATED_SUCCESS, HttpStatus.OK);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_UPDATED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable String id) {
+  public ResponseEntity<ApiResponse> deleteUser(@PathVariable String id) {
     userService.deleteUser(id);
-    return new ResponseEntity<>(ITEM_DELETED_SUCCESS, HttpStatus.OK);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_DELETED_SUCCESS);
+    return ResponseEntity.ok(response);
   }
 
 }
