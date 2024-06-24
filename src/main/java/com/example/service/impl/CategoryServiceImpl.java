@@ -75,6 +75,10 @@ public class CategoryServiceImpl implements CategoryService {
     if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
       throw new BadRequestException("Name is invalid");
     }
+    boolean existCategory = categoryRepository.findByName(categoryDto.getName()) != null;
+    if (existCategory) {
+      throw new BadRequestException(VALUE_EXISTED);
+    }
     Category category = CategoryMapper.toCreateEntity(categoryDto);
     categoryRepository.save(category);
   }
@@ -92,6 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
       if (!category.getName().equals(categoryDto.getName()) && existCategory) {
         throw new BadRequestException(VALUE_EXISTED);
       }
+
 
       Category categorySaved = CategoryMapper.toUpdateEntity(category, categoryDto);
       categoryRepository.save(categorySaved);
