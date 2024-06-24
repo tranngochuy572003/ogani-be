@@ -8,6 +8,7 @@ import java.util.List;
 
 public class CategoryMapper {
   public static CategoryDto toDto(Category category,CategoryDto categoryDto) {
+    categoryDto.setActive(category.isActive());
     categoryDto.setName(category.getName());
     categoryDto.setType(category.getType());
     return categoryDto;
