@@ -70,12 +70,6 @@
 			<version>${mysql.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.github.cdimascio</groupId>
-			<artifactId>dotenv-java</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>
