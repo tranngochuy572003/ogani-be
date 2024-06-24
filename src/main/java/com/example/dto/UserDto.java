@@ -1,5 +1,7 @@
 package com.example.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
     private String userName;
     private String fullName;
@@ -16,8 +19,7 @@ public class UserDto {
     private String address;
     private String phoneNumber;
     private String role;
-
-    @Builder.Default
-    private Boolean isActive = true;
+    @JsonProperty(value = "isActive")
+    private boolean isActive;
 
 }

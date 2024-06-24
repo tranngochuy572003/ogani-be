@@ -10,7 +10,7 @@ import java.util.List;
 public class ProductMapper {
   public static ProductDto toDto(Product product) {
     ProductDto productDto = new ProductDto();
-    productDto.setIsActive(product.isActive());
+    productDto.setActive(product.isActive());
     productDto.setNameProduct(product.getNameProduct());
     productDto.setInventory(product.getInventory());
     productDto.setPrice(product.getPrice());
@@ -30,7 +30,7 @@ public class ProductMapper {
 
   public static Product toCreateEntity(ProductDto productDto) {
     Product product = new Product();
-    product.setActive(productDto.getIsActive());
+    product.setActive(productDto.isActive());
     product.setNameProduct(productDto.getNameProduct());
     product.setInventory(productDto.getInventory());
     product.setPrice(productDto.getPrice());
@@ -41,7 +41,7 @@ public class ProductMapper {
   }
 
   public static Product toUpdateEntity(Product product , ProductDto productDto) {
-    product.setActive(productDto.getIsActive());
+    product.setActive(productDto.isActive());
     product.setNameProduct(productDto.getNameProduct());
     product.setInventory(productDto.getInventory());
     product.setPrice(productDto.getPrice());

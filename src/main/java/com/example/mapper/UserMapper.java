@@ -12,7 +12,7 @@ public class UserMapper {
   public static UserDto toDto(User user) {
     UserDto userDto = new UserDto();
     userDto.setUserName(user.getUsername());
-    userDto.setIsActive(user.isActive());
+    userDto.setActive(user.isActive());
     userDto.setPassword(user.getPassword());
     userDto.setFullName(user.getFullName());
     userDto.setPhoneNumber(user.getPhoneNumber());
@@ -26,7 +26,7 @@ public class UserMapper {
     User user = new User();
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     user.setUserName(userDto.getUserName());
-    user.setActive(userDto.getIsActive());
+    user.setActive(userDto.isActive());
     user.setPassword(encoder.encode(userDto.getPassword()));
     user.setFullName(userDto.getFullName());
     user.setPhoneNumber(userDto.getPhoneNumber());
@@ -38,7 +38,7 @@ public class UserMapper {
   public static User toUpdateEntity(User user ,UserDto userDto) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     user.setUserName(userDto.getUserName());
-    user.setActive(userDto.getIsActive());
+    user.setActive(userDto.isActive());
     user.setPassword(encoder.encode(userDto.getPassword()));
     user.setFullName(userDto.getFullName());
     user.setPhoneNumber(userDto.getPhoneNumber());
