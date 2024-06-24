@@ -79,6 +79,9 @@ public class CategoryServiceImpl implements CategoryService {
     if (existCategory) {
       throw new BadRequestException(VALUE_EXISTED);
     }
+    if(categoryDto.getIsActive()==null){
+      categoryDto.setIsActive(true);
+    }
     Category category = CategoryMapper.toCreateEntity(categoryDto);
     categoryRepository.save(category);
   }
@@ -95,6 +98,9 @@ public class CategoryServiceImpl implements CategoryService {
       boolean existCategory= categoryRepository.findByName(categoryDto.getName())!=null;
       if (!category.getName().equals(categoryDto.getName()) && existCategory) {
         throw new BadRequestException(VALUE_EXISTED);
+      }
+      if(categoryDto.getIsActive()==null){
+        categoryDto.setIsActive(true);
       }
 
 

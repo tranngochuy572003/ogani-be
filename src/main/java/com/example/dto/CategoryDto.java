@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
   private String name ;
   private String type ;
+  private Boolean isActive;
 
 
 }

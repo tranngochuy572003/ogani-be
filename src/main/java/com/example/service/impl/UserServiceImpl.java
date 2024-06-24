@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     if (userDto.getPassword().isEmpty() || userDto.getUserName().isEmpty() || userDto.getFullName().isEmpty()) {
       throw new BadRequestException("Field required is not blank.");
     }
+    if(userDto.getIsActive()==null){
+      userDto.setIsActive(true);
+    }
     User user =UserMapper.toCreateEntity(userDto);
     userRepository.save(user);
   }
@@ -69,6 +72,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     Optional<User> optionalUser = userRepository.findUserById(id);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
+      if(userDto.getIsActive()==null){
+        userDto.setIsActive(true);
+      }
       User userSaved = UserMapper.toUpdateEntity(user, userDto);
       userRepository.save(userSaved);
     } else {

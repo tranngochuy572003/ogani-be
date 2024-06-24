@@ -12,11 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductDto {
   private String nameProduct ;
-  private boolean isActive;
+  private Boolean isActive;
   private Long  inventory;
   private String  description;
   private String  information;
   private Long price ;
   private String category;
   private List<String> imageList;
-}
+
+  }

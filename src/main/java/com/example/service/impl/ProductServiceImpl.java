@@ -44,6 +44,9 @@ public class ProductServiceImpl implements ProductService {
     if (productDto.getPrice() < 0) {
       throw new BadRequestException(FIELD_INVALID);
     }
+    if(productDto.getIsActive()==null){
+      productDto.setIsActive(true);
+    }
     try {
       Product product = ProductMapper.toCreateEntity(productDto);
       product.setCategory(categoryRepository.findByName(productDto.getCategory()));
@@ -74,6 +77,9 @@ public class ProductServiceImpl implements ProductService {
       }
       if (productDto.getPrice() < 0 || productDto.getInventory() < 0 ) {
         throw new BadRequestException(FIELD_INVALID);
+      }
+      if(productDto.getIsActive()==null){
+        productDto.setIsActive(true);
       }
       Product productSaved = ProductMapper.toUpdateEntity(product, productDto);
       product.setCategory(categoryRepository.findByName(productDto.getCategory()));
