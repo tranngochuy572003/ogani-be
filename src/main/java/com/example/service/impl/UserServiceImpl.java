@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,15 +37,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public List<UserDto> getAllUsers() {
+    return UserMapper.toListDto(userRepository.findAll());
   }
 
   @Override
-  public User getUserById(String id) {
-    Optional<User> user = userRepository.findById(id);
+  public UserDto getUserById(String id) {
+    Optional<User> user = userRepository.findUserById(id);
     if (user.isPresent()) {
-      return user.get();
+      return UserMapper.toDto(user.get());
     } else {
       throw new com.example.exception.BadRequestException("Email or Password is invalid");
     }

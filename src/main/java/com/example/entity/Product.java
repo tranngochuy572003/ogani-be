@@ -16,7 +16,7 @@ public class Product extends BaseEntity {
   @Column(unique = true,nullable = false)
   private String nameProduct ;
   @Column
-  private boolean isActive =true;
+  private boolean isActive;
   @Column
   private Long  inventory;
   @Column

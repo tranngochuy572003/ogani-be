@@ -96,8 +96,6 @@ public class CategoryServiceImpl implements CategoryService {
       if (!category.getName().equals(categoryDto.getName()) && existCategory) {
         throw new BadRequestException(VALUE_EXISTED);
       }
-
-
       Category categorySaved = CategoryMapper.toUpdateEntity(category, categoryDto);
       categoryRepository.save(categorySaved);
     } else {

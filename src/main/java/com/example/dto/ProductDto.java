@@ -1,17 +1,20 @@
 package com.example.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductDto {
   private String nameProduct ;
+  @JsonProperty(value = "isActive")
   private boolean isActive;
   private Long  inventory;
   private String  description;
@@ -19,4 +22,5 @@ public class ProductDto {
   private Long price ;
   private String category;
   private List<String> imageList;
+
 }

@@ -15,11 +15,13 @@ public class CategoryMapper {
 
   public static Category toCreateEntity(CategoryDto categoryDto) {
     Category category = new Category();
+    category.setActive(categoryDto.isActive());
     category.setName(categoryDto.getName());
     category.setType(categoryDto.getType());
     return category;
   }
   public static Category toUpdateEntity(Category category,CategoryDto categoryDto) {
+    category.setActive(categoryDto.isActive());
     category.setName(categoryDto.getName());
     category.setType(categoryDto.getType());
     return category;

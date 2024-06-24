@@ -1,16 +1,21 @@
 package com.example.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class CategoryDto {
   private String name ;
   private String type ;
+  @JsonProperty(value = "isActive")
+  private boolean isActive;
 
 
 }

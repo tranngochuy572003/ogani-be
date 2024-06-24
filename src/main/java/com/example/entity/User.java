@@ -1,8 +1,9 @@
 package com.example.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.mapping.UniqueKey;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +31,7 @@ public class User extends BaseEntity implements UserDetails {
   @Column
   private String role ;
   @Column
-  private boolean isActive= true;
+  private boolean isActive;
 
   @ManyToMany(mappedBy = "users")
   private Collection<Product> product;

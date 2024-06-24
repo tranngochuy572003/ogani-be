@@ -4,9 +4,13 @@ import com.example.dto.UserDto;
 import com.example.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserMapper {
 
-  public static UserDto toDto(User user,UserDto userDto) {
+  public static UserDto toDto(User user) {
+    UserDto userDto = new UserDto();
     userDto.setUserName(user.getUsername());
     userDto.setActive(user.isActive());
     userDto.setPassword(user.getPassword());
@@ -41,5 +45,13 @@ public class UserMapper {
     user.setRole(userDto.getRole());
     user.setAddress(userDto.getAddress());
     return user;
+  }
+
+  public static List<UserDto> toListDto(List<User> users) {
+    List<UserDto> userDtoList  = new ArrayList<>();
+    for(User user :users){
+      userDtoList.add(UserMapper.toDto(user));
+    }
+    return userDtoList;
   }
 }
