@@ -3,8 +3,7 @@ package com.example.common;
 public class MessageConstant {
   public static final String EMAIL_PASSWORD_INVALID="Invalid email or password";
   public static final String FIELD_INVALID="Field is invalid";
-  public static final String ITEM_NO_EXIST="Item doesn't exist";
-
+  public static final String VALUE_NO_EXIST="Value doesn't exist";
   public static final String UNAUTHORIZED="Unauthorized";
   public static final String ITEM_CREATED_SUCCESS="Item created successfully";
   public static final String ITEM_UPDATED_SUCCESS="Item updated successfully";

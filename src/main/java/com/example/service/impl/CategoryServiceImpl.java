@@ -3,6 +3,7 @@ package com.example.service.impl;
 import com.example.dto.CategoryDto;
 import com.example.entity.Category;
 import com.example.exception.BadRequestException;
+import com.example.exception.NotFoundException;
 import com.example.mapper.CategoryMapper;
 import com.example.repository.CategoryRepository;
 import com.example.service.CategoryService;
@@ -35,7 +36,6 @@ public class CategoryServiceImpl implements CategoryService {
     if (AppUtil.containsSpecialCharacters(type)) {
       throw new BadRequestException(FIELD_INVALID);
     }
-
     return CategoryMapper.toListDto(categoryRepository.findByType(type));
 
   }
@@ -45,7 +45,13 @@ public class CategoryServiceImpl implements CategoryService {
       throw new BadRequestException(FIELD_INVALID);
     }
     CategoryDto categoryDto = new CategoryDto();
-    return CategoryMapper.toDto(categoryRepository.findByName(name),categoryDto);
+    Category category = categoryRepository.findByName(name);
+    if(category!=null){
+      return CategoryMapper.toDto(category,categoryDto);
+    }
+    else {
+      throw new NotFoundException(VALUE_NO_EXIST);
+    }
   }
 
   @Override
@@ -63,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
       CategoryDto categoryDto= new CategoryDto();
       return CategoryMapper.toDto(categoryOptional.get(),categoryDto);
     } else {
-      throw new BadRequestException(FIELD_INVALID);
+      throw new NotFoundException(VALUE_NO_EXIST);
     }
   }
 
@@ -114,7 +120,7 @@ public class CategoryServiceImpl implements CategoryService {
     if (optionalCategory.isPresent()) {
       categoryRepository.deleteById(id);
     } else {
-      throw new BadRequestException(ITEM_NO_EXIST);
+      throw new NotFoundException(VALUE_NO_EXIST);
     }
   }
 }
