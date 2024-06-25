@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.entity.Image;
 import com.example.entity.Product;
+import com.example.exception.BadRequestException;
 import com.example.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,11 @@ import java.util.regex.Matcher;
 
 import static com.example.common.AppConstant.LOGGER;
 import static com.example.common.AppConstant.PUBLIC_ID_PATTERN;
+import static com.example.common.MessageConstant.FIELD_INVALID;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadImpl implements FileUploadService {
+public class FileUploadServiceImpl implements FileUploadService {
 
     private final Cloudinary cloudinary;
 
@@ -30,16 +32,20 @@ public class FileUploadImpl implements FileUploadService {
     public List<Image> uploadFiles(MultipartFile[] files, Product product) throws IOException {
         List<Image> uploadedImages = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(
-                    file.getBytes(),
-                    ObjectUtils.asMap("public_id", UUID.randomUUID().toString())
-            );
-            String imageUrl = (String) uploadResult.get("url");
-            Image image = new Image();
-            image.setUrlImg(imageUrl);
-            image.setProducts(product);
-            uploadedImages.add(image);
+        try {
+            for (MultipartFile file : files) {
+                Map<String, Object> uploadResult = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap("public_id", UUID.randomUUID().toString())
+                );
+                String imageUrl = (String) uploadResult.get("url");
+                Image image = new Image();
+                image.setUrlImg(imageUrl);
+                image.setProducts(product);
+                uploadedImages.add(image);
+            }
+        }catch (Exception e){
+            throw new BadRequestException(FIELD_INVALID);
         }
 
         return uploadedImages;

@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.dto.CategoryDto;
+import com.example.entity.Category;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ public interface CategoryService {
   List<CategoryDto> getAllCategories();
   List<CategoryDto> findByType (String type) ;
   CategoryDto findByName (String name) ;
+  Category findCategoryByName (String name) ;
   List<CategoryDto> findByCreatedDate (LocalDate date) throws ParseException;
   CategoryDto findById (String id) ;
   void addCategory(CategoryDto categoryDto);
