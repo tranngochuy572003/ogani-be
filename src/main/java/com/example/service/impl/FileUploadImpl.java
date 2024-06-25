@@ -14,12 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+
+import static com.example.common.AppConstant.LOGGER;
+import static com.example.common.AppConstant.PUBLIC_ID_PATTERN;
 
 @Service
 @RequiredArgsConstructor
 public class FileUploadImpl implements FileUploadService {
 
     private final Cloudinary cloudinary;
+
     @Override
     public List<Image> uploadFiles(MultipartFile[] files, Product product) throws IOException {
         List<Image> uploadedImages = new ArrayList<>();
@@ -38,4 +44,29 @@ public class FileUploadImpl implements FileUploadService {
 
         return uploadedImages;
     }
+    public void deleteImagesByUrls(List<String> imageUrls) {
+        for (String imageUrl : imageUrls) {
+            try {
+                String publicId = extractPublicId(imageUrl);
+                if (publicId != null) {
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                    LOGGER.log(Level.INFO, "Successfully deleted image with public ID: " + publicId);
+                } else {
+                    LOGGER.log(Level.WARNING, "Could not extract public ID from URL: " + imageUrl);
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Error deleting image from Cloudinary", e);
+            }
+        }
+    }
+
+    private String extractPublicId(String imageUrl) {
+        Matcher matcher = PUBLIC_ID_PATTERN.matcher(imageUrl);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+
 }

@@ -22,6 +22,7 @@ public class ProductController {
   private ProductService productService;
 
 
+
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addProduct(
           @RequestPart("productDto") ProductDto productDto,
@@ -39,8 +40,8 @@ public class ProductController {
   }
 
   @PatchMapping("/update/{id}")
-  public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id, @RequestBody ProductDto productDto) {
-    productService.updateProduct(id, productDto);
+  public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id, @RequestPart("productDto") ProductDto productDto, @RequestParam(value = "image",required = false) MultipartFile [] multipartFile) throws IOException {
+    productService.updateProduct(id, productDto,multipartFile);
     ApiResponse response = new ApiResponse(HttpStatus.OK.value());
     response.setMessage(ITEM_UPDATED_SUCCESS);
     return ResponseEntity.ok(response);
