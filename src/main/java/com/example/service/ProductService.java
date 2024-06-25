@@ -10,6 +10,6 @@ public interface ProductService {
   void addProduct(ProductDto productDto, MultipartFile [] multipartFile) throws IOException;
 
   List<ProductDto> getAllProducts();
-  void updateProduct(String id , ProductDto productDto) ;
+  void updateProduct(String id , ProductDto productDto,MultipartFile [] multipartFile) throws IOException;
 
 }

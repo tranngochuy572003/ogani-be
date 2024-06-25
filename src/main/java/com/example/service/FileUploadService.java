@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface FileUploadService {
     List<Image> uploadFiles(MultipartFile [] files, Product product) throws IOException;
+    void deleteImagesByUrls(List<String> imageUrls);
 }

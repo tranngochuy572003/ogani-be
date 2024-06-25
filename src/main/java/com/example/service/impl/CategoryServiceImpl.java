@@ -55,6 +55,11 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
+  public Category findCategoryByName(String name) {
+    return (categoryRepository.findByName(name));
+  }
+
+  @Override
   public List<CategoryDto> findByCreatedDate(LocalDate localDate) {
     return CategoryMapper.toListDto(categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
   }
