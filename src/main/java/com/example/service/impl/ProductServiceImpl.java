@@ -40,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void addProduct(ProductDto productDto, MultipartFile[] files) {
         if (AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
-            throw new BadRequestException("Name is invalid");
+            throw new BadRequestException(FIELD_INVALID);
         }
         boolean existProduct = productRepository.findProductByNameProduct(productDto.getNameProduct()) != null;
         if (existProduct) {
@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
             product.setImages(imageUrlList);
             productRepository.save(product);
         } catch (IOException e) {
-            throw new BadRequestException("An error occurred while uploading files. Please try again later.");
+            throw new BadRequestException(FILE_UPLOAD_ERROR);
         }
     }
 
@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
                 }
                 productRepository.save(productSaved);
             } catch (IOException e) {
-                throw new BadRequestException("An error occurred while uploading files. Please try again later.");
+                throw new BadRequestException(FILE_UPLOAD_ERROR);
             }
             List<String> listToRemove = productDto.getImageList();
             if (listToRemove != null) {
