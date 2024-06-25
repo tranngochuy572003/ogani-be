@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       throw new BadRequestException("Field required is not blank.");
     }
     User user =UserMapper.toCreateEntity(userDto);
+    user.setRole("CUSTOMER");
     userRepository.save(user);
   }
 
