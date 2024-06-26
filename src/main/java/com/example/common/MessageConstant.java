@@ -12,5 +12,10 @@ public class MessageConstant {
   public static final String ITEM_DELETED_SUCCESS="Item deleted successfully";
   public static final String FIELD_UPDATED_SUCCESS="Field is updated successfully";
   public static final String VALUE_EXISTED="Value existed";
+  public static final String REGISTER_SUCCESS="Register successfully";
+  public static final String CONFIRM_PASSWORD_INCORRECT="Confirm password is incorrect";
+
+
+
 
 }
