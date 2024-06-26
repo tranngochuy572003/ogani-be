@@ -59,11 +59,12 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public void register(RegisterDto registerDto) {
     if(userService.existsByUsername(registerDto.getUserName())){
+      if(!registerDto.getConfirmPassword().equals(registerDto.getPassword())){
+        throw new BadRequestException(CONFIRM_PASSWORD_INCORRECT);
+      }
       UserDto userDto = UserMapper.toUserDto(registerDto);
       userService.addUser(userDto);
     }
-    if(registerDto.getConfirmPassword().equals(registerDto.getPassword())){
-      throw new BadRequestException(CONFIRM_PASSWORD_INCORRECT);
-    }
+
   }
 }
