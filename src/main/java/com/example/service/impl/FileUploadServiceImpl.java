@@ -7,6 +7,7 @@ import com.example.entity.Product;
 import com.example.exception.BadRequestException;
 import com.example.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,15 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 
-import static com.example.common.AppConstant.LOGGER;
 import static com.example.common.AppConstant.PUBLIC_ID_PATTERN;
 import static com.example.common.MessageConstant.FIELD_INVALID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileUploadServiceImpl implements FileUploadService {
 
     private final Cloudinary cloudinary;
@@ -56,12 +56,12 @@ public class FileUploadServiceImpl implements FileUploadService {
                 String publicId = extractPublicId(imageUrl);
                 if (publicId != null) {
                     cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-                    LOGGER.log(Level.INFO, "Successfully deleted image with public ID: " + publicId);
+                    log.info("Successfully deleted image with public ID: " + publicId);
                 } else {
-                    LOGGER.log(Level.WARNING, "Could not extract public ID from URL: " + imageUrl);
+                    log.warn("Could not extract public ID from URL: " + imageUrl);
                 }
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error deleting image from Cloudinary", e);
+                log.error("Error deleting image from Cloudinary", e);
             }
         }
     }
