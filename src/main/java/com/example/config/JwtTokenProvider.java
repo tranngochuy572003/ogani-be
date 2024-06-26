@@ -18,9 +18,10 @@ import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.example.common.AppConstant.JWT_HEADER;
+
 @Component
 public class JwtTokenProvider {
-  private static final String JWT_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
   @Autowired
   private UserService userService;
 
@@ -47,7 +48,7 @@ public class JwtTokenProvider {
     LocalDateTime ldt = LocalDateTime.now().plusHours(1);
     JSONObject payload = new JSONObject();
     payload.put("userName", user.getUsername());
-    payload.put("role", user.getRole());
+    payload.put("role", user.getRole().getValue());
     payload.put("exp", ldt.toEpochSecond(ZoneOffset.UTC));
     String secret = "secret";
     String signature = hmacSha256(encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()), secret);

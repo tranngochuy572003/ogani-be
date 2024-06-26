@@ -7,6 +7,7 @@ import com.example.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -44,6 +45,8 @@ public class CategoryController {
     List<CategoryDto> categories = categoryService.findByCreatedDate(localDate);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
+
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryDto categoryDto) {
     categoryService.addCategory(categoryDto);
@@ -51,6 +54,7 @@ public class CategoryController {
     response.setMessage(ITEM_CREATED_SUCCESS);
     return ResponseEntity.ok(response);
   }
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PatchMapping("/update/{id}")
   public ResponseEntity<ApiResponse> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
     categoryService.updateCategory(id, categoryDto);
@@ -63,7 +67,7 @@ public class CategoryController {
     List<CategoryDto> categories = categoryService.getCategoriesActive();
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
   }
-
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @DeleteMapping ("/deleteCategory/{id}")
   public ResponseEntity<ApiResponse> deleteCategory(@PathVariable String id) {
     categoryService.deleteCategory(id);

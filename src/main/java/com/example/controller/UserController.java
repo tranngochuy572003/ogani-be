@@ -9,6 +9,7 @@ import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,6 @@ public class UserController {
     String jwtToken = authService.isAuthenticated(userDtoLogin);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),jwtToken));
   }
-
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addUser(@RequestBody UserDto userDto) {
     if(userService.existsByUsername(userDto.getUserName())){
@@ -40,6 +40,7 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @GetMapping
   public ResponseEntity<ApiResponse> userList() {
     List<UserDto> users = userService.getAllUsers();
@@ -51,7 +52,7 @@ public class UserController {
     UserDto userDto = userService.getUserById(id);
     return ResponseEntity.ok(new ApiResponse (HttpStatus.OK.value(),userDto));
   }
-
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PatchMapping("/update/{id}")
   public ResponseEntity<ApiResponse> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
     userService.updateUser(id, userDto);
@@ -59,7 +60,7 @@ public class UserController {
     response.setMessage(ITEM_UPDATED_SUCCESS);
     return ResponseEntity.ok(response);
   }
-
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<ApiResponse> deleteUser(@PathVariable String id) {
     userService.deleteUser(id);

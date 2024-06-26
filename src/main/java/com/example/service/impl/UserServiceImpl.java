@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.dto.UserDto;
 import com.example.entity.User;
+import com.example.enums.UserRole;
 import com.example.exception.BadRequestException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       throw new BadRequestException("Field required is not blank.");
     }
     User user =UserMapper.toCreateEntity(userDto);
+    user.setRole(UserRole.CUSTOMER);
     userRepository.save(user);
   }
 

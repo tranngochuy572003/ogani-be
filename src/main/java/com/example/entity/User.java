@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class User extends BaseEntity implements UserDetails {
   @Column
   private String phoneNumber;
   @Column
-  private String role ;
+  private UserRole role;
   @Column
   private boolean isActive;
 
@@ -48,8 +49,7 @@ public class User extends BaseEntity implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
-  }
+    return Collections.singleton(new SimpleGrantedAuthority(role.getValue()));  }
 
   @Override
   public String getUsername() {

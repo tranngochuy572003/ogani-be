@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -47,16 +48,10 @@ public class WebSecurityConfig  {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-            .csrf(csrf -> csrf.disable())  // Disable CSRF protection
+            .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/user/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
-
+                    .requestMatchers("/user/login" ,"/user/add").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
