@@ -21,6 +21,7 @@ public class UserController {
   private UserService userService;
 
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addUser(@RequestBody UserDto userDto) {
     if(userService.existsByUsername(userDto.getUserName())){

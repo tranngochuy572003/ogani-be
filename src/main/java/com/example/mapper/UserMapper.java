@@ -1,5 +1,6 @@
 package com.example.mapper;
 
+import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,5 +52,15 @@ public class UserMapper {
       userDtoList.add(UserMapper.toDto(user));
     }
     return userDtoList;
+  }
+
+  public static UserDto toUserDto(RegisterDto registerDto) {
+    UserDto userDto = new UserDto();
+    userDto.setUserName(registerDto.getUserName());
+    userDto.setPassword(registerDto.getPassword());
+    userDto.setFullName(registerDto.getFullName());
+    userDto.setPhoneNumber(registerDto.getPhoneNumber());
+    userDto.setAddress(registerDto.getAddress());
+    return userDto;
   }
 }
