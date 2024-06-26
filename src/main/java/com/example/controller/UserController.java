@@ -22,14 +22,7 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  @Autowired
-  private AuthService authService;
 
-  @PostMapping("/login")
-  public ResponseEntity<ApiResponse> userLogin(@RequestBody UserDtoLogin userDtoLogin) {
-    String jwtToken = authService.isAuthenticated(userDtoLogin);
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),jwtToken));
-  }
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addUser(@RequestBody UserDto userDto) {
     if(userService.existsByUsername(userDto.getUserName())){
