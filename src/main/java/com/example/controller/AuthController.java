@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.example.api.ApiResponse;
-import com.example.dto.UserDtoLogin;
+import com.example.dto.AuthenticationDto;
 import com.example.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,8 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> userLogin(@RequestBody UserDtoLogin userDtoLogin) {
-        String jwtToken = authService.isAuthenticated(userDtoLogin);
+    public ResponseEntity<ApiResponse> login(@RequestBody AuthenticationDto authenticationDto) {
+        String jwtToken = authService.isAuthenticated(authenticationDto);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),jwtToken));
     }
 }

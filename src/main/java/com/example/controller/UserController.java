@@ -3,8 +3,6 @@ package com.example.controller;
 
 import com.example.api.ApiResponse;
 import com.example.dto.UserDto;
-import com.example.dto.UserDtoLogin;
-import com.example.service.AuthService;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

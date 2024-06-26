@@ -1,6 +1,6 @@
 package com.example.config;
 
-import com.example.dto.UserDtoLogin;
+import com.example.dto.AuthenticationDto;
 import com.example.entity.User;
 import com.example.service.UserService;
 import com.nimbusds.jose.shaded.json.JSONObject;
@@ -43,8 +43,8 @@ public class JwtTokenProvider {
     }
   }
 
-  public String createToken(UserDtoLogin userDtoLogin)  {
-    User user = userService.findUserByEmail(userDtoLogin.getUserName());
+  public String createToken(AuthenticationDto authenticationDto)  {
+    User user = userService.findUserByEmail(authenticationDto.getUserName());
     LocalDateTime ldt = LocalDateTime.now().plusHours(1);
     JSONObject payload = new JSONObject();
     payload.put("userName", user.getUsername());

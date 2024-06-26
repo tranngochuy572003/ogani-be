@@ -1,7 +1,7 @@
 package com.example.service.impl;
 
 import com.example.config.JwtTokenProvider;
-import com.example.dto.UserDtoLogin;
+import com.example.dto.AuthenticationDto;
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.repository.UserRepository;
@@ -39,11 +39,11 @@ public class AuthServiceImpl implements AuthService {
     return false;
   }
 
-  public String isAuthenticated(UserDtoLogin userDtoLogin) {
-    boolean isAuthenticated = checkPassword(userDtoLogin.getUserName(), userDtoLogin.getPassword());
+  public String isAuthenticated(AuthenticationDto authenticationDto) {
+    boolean isAuthenticated = checkPassword(authenticationDto.getUserName(), authenticationDto.getPassword());
     try {
       if (isAuthenticated) {
-        return jwtTokenProvider.createToken(userDtoLogin);
+        return jwtTokenProvider.createToken(authenticationDto);
       }else {
         throw new BadRequestException(EMAIL_PASSWORD_INVALID);
       }
