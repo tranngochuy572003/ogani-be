@@ -26,4 +26,10 @@ public class GlobalExceptionHandler {
     ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
+
+  @ExceptionHandler(value = TokenRefreshException.class)
+  public ResponseEntity<ErrorResponse> handleTokenRefreshException(TokenRefreshException e) {
+    ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), e.getMessage());
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+  }
 }

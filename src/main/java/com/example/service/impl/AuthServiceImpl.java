@@ -43,11 +43,11 @@ public class AuthServiceImpl implements AuthService {
     return false;
   }
 
-  public String isAuthenticated(AuthenticationDto authenticationDto) {
-    boolean isAuthenticated = checkPassword(authenticationDto.getUserName(), authenticationDto.getPassword());
+  public String isAuthenticated(String email,String rawPassword) {
+    boolean isAuthenticated = checkPassword(email, rawPassword);
     try {
       if (isAuthenticated) {
-        return jwtTokenProvider.createToken(authenticationDto);
+        return jwtTokenProvider.createToken(email);
       }else {
         throw new BadRequestException(EMAIL_PASSWORD_INVALID);
       }
