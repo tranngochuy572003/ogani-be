@@ -33,6 +33,8 @@ public class User extends BaseEntity implements UserDetails {
   private UserRole role;
   @Column
   private boolean isActive;
+  @Column
+  private String refreshToken;
 
   @ManyToMany(mappedBy = "users")
   private Collection<Product> product;

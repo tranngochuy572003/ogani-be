@@ -8,6 +8,8 @@ server:
     ${CLOUDINARY_API_KEY}
   api_secret :
     ${CLOUDINARY_API_SECRET}
+  secret_key:
+    ${SECRET_KEY}
 
 
 
