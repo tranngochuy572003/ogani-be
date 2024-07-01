@@ -2,7 +2,7 @@ package com.example.service.impl;
 
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
-import com.example.exception.TokenRefreshException;
+import com.example.exception.ForbiddenException;
 import com.example.repository.UserRepository;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
@@ -29,6 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.common.AppConstant.JWT_HEADER;
+import static com.example.common.MessageConstant.FIELD_INVALID;
+import static com.example.common.MessageConstant.REFRESH_TOKEN_EXPIRED;
 
 @Service
 @Data
@@ -45,7 +47,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         this.userService = userService;
     }
 
-    public String createToken(String userName)  {
+    public String createToken(String userName) {
         User user = userService.findUserByEmail(userName);
 
         LocalDateTime nowInVietnam = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusMinutes(5);
@@ -65,11 +67,11 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
             return (String) claimsSet.getClaim("userName");
         } else {
-            throw new BadRequestException("Invalid token");
+            throw new BadRequestException(FIELD_INVALID);
         }
     }
 
-    public String createRefreshToken(String token){
+    public String createRefreshToken(String token) {
         try {
             if (verifyExpiration(token)) {
                 JWT jwt = JWTParser.parse(token);
@@ -77,11 +79,11 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                 String userName = (String) claimsSet.getClaim("userName");
                 return refreshToken(userName);
             } else {
-                throw new TokenRefreshException("Refresh token was expired. Please make a new sign in request");
+                throw new ForbiddenException(REFRESH_TOKEN_EXPIRED);
 
             }
-        }catch (ParseException e){
-           throw new BadRequestException("Token invalid");
+        } catch (ParseException e) {
+            throw new BadRequestException(FIELD_INVALID);
         }
     }
 
@@ -112,7 +114,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
 
-    public String refreshToken(String userName)  {
+    public String refreshToken(String userName) {
         User user = userService.findUserByEmail(userName);
 
         ZoneId vietnamZoneId = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -129,7 +131,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()) + "." + signature;
     }
 
-    public boolean isValidToken(String token , UserDetails userDetails) throws ParseException {
+    public boolean isValidToken(String token, UserDetails userDetails) throws ParseException {
         String userName = extractUserNameFromJWT(token);
         return userName.equals(userDetails.getUsername()) && verifyExpiration(token);
     }

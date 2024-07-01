@@ -15,6 +15,9 @@ public class MessageConstant {
   public static final String REGISTER_SUCCESS="Register successfully";
   public static final String CONFIRM_PASSWORD_INCORRECT="Confirm password is incorrect";
 
+  public static final String REFRESH_TOKEN_EXPIRED="Refresh token was expired. Please make a new sign in request";
+
+
 
 
 

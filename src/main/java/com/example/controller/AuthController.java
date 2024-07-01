@@ -2,11 +2,11 @@ package com.example.controller;
 
 import com.example.api.ApiResponse;
 import com.example.api.JwtResponse;
+import com.example.api.TokenDto;
 import com.example.api.TokenRefreshRequest;
-import com.example.api.TokenRefreshResponse;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
-import com.example.exception.TokenRefreshException;
+import com.example.exception.ForbiddenException;
 import com.example.service.AuthService;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
@@ -51,9 +51,9 @@ public class AuthController {
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<ApiResponse> refresh(@RequestBody TokenRefreshRequest request) throws TokenRefreshException, ParseException {
+    public ResponseEntity<ApiResponse> refresh(@RequestBody TokenRefreshRequest request) throws ForbiddenException {
         String refreshToken = jwtTokenService.createRefreshToken(request.getRefreshToken());
-        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenRefreshResponse(refreshToken)));
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenDto(refreshToken)));
 
     }
 }

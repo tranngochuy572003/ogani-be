@@ -3,10 +3,10 @@ package com.example.api;
 import lombok.Data;
 
 @Data
-public class TokenRefreshResponse {
+public class TokenDto {
     private String token;
 
-    public TokenRefreshResponse(String token) {
+    public TokenDto(String token) {
         this.token = token;
     }
 }
