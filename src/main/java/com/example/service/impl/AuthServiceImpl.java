@@ -1,6 +1,6 @@
 package com.example.service.impl;
 
-import com.example.api.JwtResponse;
+import com.example.api.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public JwtResponse login(AuthenticationDto authenticationDto)  {
+  public AuthorizationDto login(AuthenticationDto authenticationDto)  {
     try {
       UserDetails userDetails = userService.loadUserByUsername(authenticationDto.getUserName());
       String jwtToken = isAuthenticated(authenticationDto.getUserName(), authenticationDto.getPassword());
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
       User user = userService.findUserByEmail(userName);
       user.setRefreshToken(refreshToken);
       userRepository.save(user);
-      return new JwtResponse(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
+      return new AuthorizationDto(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
     }
     catch (ParseException e){
       throw new BadRequestException(FIELD_INVALID);

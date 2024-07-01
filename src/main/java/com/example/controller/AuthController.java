@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.example.api.ApiResponse;
-import com.example.api.JwtResponse;
+import com.example.api.AuthorizationDto;
 import com.example.api.TokenDto;
 import com.example.api.TokenRefreshRequest;
 import com.example.dto.AuthenticationDto;
@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -37,9 +34,11 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ApiResponse login(@RequestBody AuthenticationDto authenticationDto) throws ParseException {
-        JwtResponse jwtResponse = authService.login(authenticationDto);
-        return new ApiResponse(HttpStatus.OK.value(), jwtResponse);
+    public ResponseEntity<ApiResponse> login(@RequestBody AuthenticationDto authenticationDto) throws ParseException {
+        AuthorizationDto authorizationDto = authService.login(authenticationDto);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setData(authorizationDto);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
@@ -51,9 +50,10 @@ public class AuthController {
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<ApiResponse> refresh(@RequestBody TokenRefreshRequest request) throws ForbiddenException {
-        String refreshToken = jwtTokenService.createRefreshToken(request.getRefreshToken());
-        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenDto(refreshToken)));
+    public ResponseEntity<ApiResponse> refreshToken(@RequestHeader ("Authorization") String authorizationHeader) throws ForbiddenException {
+        String refreshToken = authorizationHeader.replace("Bearer ", "");
+        String token = jwtTokenService.createRefreshToken(refreshToken);
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenDto(token)));
 
     }
 }

@@ -108,7 +108,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             byte[] signedBytes = sha256Hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return encode(signedBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
-            Logger.getLogger(JwtTokenServiceImpl.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            log.error(ex.getMessage());
             return null;
         }
     }

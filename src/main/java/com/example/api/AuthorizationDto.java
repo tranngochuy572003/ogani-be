@@ -5,11 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class JwtResponse {
+public class AuthorizationDto {
     private Token token;
     private User user;
 
-    public JwtResponse(String accessToken, String refreshToken, String id, String username,boolean isActive, List<String> roles ) {
+    public AuthorizationDto(String accessToken, String refreshToken, String id, String username, boolean isActive, List<String> roles ) {
         this.token = new Token(accessToken, refreshToken);
         this.user = new User(id,username,isActive,roles);
     }
