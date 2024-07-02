@@ -16,5 +16,6 @@ public interface ProductService {
   ProductDto getProductById(String id);
   ProductDto getProductByName(String name);
   List<ProductDto> getProductsByCreatedDate(LocalDate localDate);
+  void deleteById(String id);
 
 }
