@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
-import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
+import static com.example.common.MessageConstant.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -67,6 +66,15 @@ public class ProductController {
     LocalDate localDate = AppUtil.checkDateValid(createdDate);
     List<ProductDto> productDtoList= productService.getProductsByCreatedDate(localDate);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDtoList));
+
+  }
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  @DeleteMapping("/deleteById/{id}")
+  public ResponseEntity<ApiResponse> deleteById(@PathVariable String id){
+    productService.deleteById(id);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_DELETED_SUCCESS);
+    return ResponseEntity.ok(response);
 
   }
 

@@ -150,4 +150,15 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getProductsByCreatedDate(LocalDate localDate) {
         return ProductMapper.toListDto(productRepository.findByCreatedDateBetween(localDate.atStartOfDay(),localDate.plusDays(1).atStartOfDay()));
     }
+
+    @Override
+    public void deleteById(String id) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            productRepository.deleteById(id);
+        } else {
+            throw new NotFoundException(VALUE_NO_EXIST);
+        }
+
+    }
 }
