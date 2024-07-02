@@ -53,4 +53,12 @@ public class ProductController {
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDto));
   }
 
+  @GetMapping("/getProductByName/{name}")
+  public ResponseEntity<ApiResponse> getProductByName(@PathVariable String name){
+    ProductDto productDto = productService.getProductByName(name);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDto));
+
+  }
+
+
 }

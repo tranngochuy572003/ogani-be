@@ -13,5 +13,6 @@ public interface ProductService {
   void updateProduct(String id , ProductDto productDto,MultipartFile [] multipartFile) throws IOException;
 
   ProductDto getProductById(String id);
+  ProductDto getProductByName(String name);
 
 }
