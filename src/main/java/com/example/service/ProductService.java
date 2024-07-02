@@ -12,4 +12,6 @@ public interface ProductService {
   List<ProductDto> getAllProducts();
   void updateProduct(String id , ProductDto productDto,MultipartFile [] multipartFile) throws IOException;
 
+  ProductDto getProductById(String id);
+
 }
