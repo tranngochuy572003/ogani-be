@@ -131,4 +131,17 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
     }
+
+    @Override
+    public ProductDto getProductByName(String name) {
+        if (AppUtil.containsSpecialCharacters(name)) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+        Product product = productRepository.findProductByNameProduct(name);
+        if (product != null) {
+            return ProductMapper.toDto(product);
+        } else {
+            throw new NotFoundException(VALUE_NO_EXIST);
+        }
+    }
 }
