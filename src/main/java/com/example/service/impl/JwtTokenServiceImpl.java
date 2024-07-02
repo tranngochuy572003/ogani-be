@@ -29,21 +29,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.common.AppConstant.JWT_HEADER;
-import static com.example.common.MessageConstant.FIELD_INVALID;
-import static com.example.common.MessageConstant.REFRESH_TOKEN_EXPIRED;
+import static com.example.common.MessageConstant.*;
 
 @Service
 @Data
 @Slf4j
 public class JwtTokenServiceImpl implements JwtTokenService {
 
-    private UserRepository userRepository;
     private UserService userService;
 
 
     @Autowired
     public JwtTokenServiceImpl(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
         this.userService = userService;
     }
 
@@ -61,13 +58,18 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()) + "." + signature;
     }
 
-    public String extractUserNameFromJWT(String token) throws ParseException {
-        if (verifyExpiration(token)) {
-            JWT jwt = JWTParser.parse(token);
-            JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-            return (String) claimsSet.getClaim("userName");
-        } else {
-            throw new BadRequestException(FIELD_INVALID);
+    public String extractUserNameFromJWT(String token) {
+        try {
+            if (verifyExpiration(token)) {
+                JWT jwt = JWTParser.parse(token);
+                JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
+                return (String) claimsSet.getClaim("userName");
+            }
+            else {
+                throw new BadRequestException(TOKEN_INVALID);
+            }
+        } catch (ParseException e) {
+            throw new BadRequestException(TOKEN_INVALID);
         }
     }
 
@@ -87,12 +89,17 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         }
     }
 
-    public boolean verifyExpiration(String authToken) throws ParseException {
-        JWT jwt = JWTParser.parse(authToken);
-        JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-        Instant expiryTime = claimsSet.getExpirationTime().toInstant();
-        Instant nowVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant();
-        return expiryTime.isAfter(nowVietnam);
+    public boolean verifyExpiration(String authToken) {
+        try {
+            JWT jwt = JWTParser.parse(authToken);
+            JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
+            Instant expiryTime = claimsSet.getExpirationTime().toInstant();
+            Instant nowVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant();
+            return expiryTime.isAfter(nowVietnam);
+        }catch (ParseException e){
+            throw new BadRequestException(TOKEN_INVALID);
+        }
+
     }
 
     public static String encode(byte[] bytes) {
@@ -131,7 +138,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()) + "." + signature;
     }
 
-    public boolean isValidToken(String token, UserDetails userDetails) throws ParseException {
+    public boolean isValidToken(String token, UserDetails userDetails) {
         String userName = extractUserNameFromJWT(token);
         return userName.equals(userDetails.getUsername()) && verifyExpiration(token);
     }

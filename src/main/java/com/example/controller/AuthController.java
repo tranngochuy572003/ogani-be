@@ -3,7 +3,6 @@ package com.example.controller;
 import com.example.api.ApiResponse;
 import com.example.api.AuthorizationDto;
 import com.example.api.TokenDto;
-import com.example.api.TokenRefreshRequest;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 import com.example.exception.ForbiddenException;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
+import static com.example.common.MessageConstant.LOGOUT_SUCCESS;
 import static com.example.common.MessageConstant.REGISTER_SUCCESS;
 
 @RestController
@@ -54,6 +54,13 @@ public class AuthController {
         String refreshToken = authorizationHeader.replace("Bearer ", "");
         String token = jwtTokenService.createRefreshToken(refreshToken);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenDto(token)));
-
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(@RequestHeader ("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "");
+        authService.logout(token);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setMessage(LOGOUT_SUCCESS);
+        return ResponseEntity.ok(response);
     }
 }
