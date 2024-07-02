@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.api.ApiResponse;
 import com.example.dto.ProductDto;
 import com.example.service.ProductService;
+import com.example.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
@@ -57,6 +59,14 @@ public class ProductController {
   public ResponseEntity<ApiResponse> getProductByName(@PathVariable String name){
     ProductDto productDto = productService.getProductByName(name);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDto));
+
+  }
+
+  @GetMapping("/getProductByCreatedDate/{createdDate}")
+  public ResponseEntity<ApiResponse> getProductByCreatedDate(@PathVariable String createdDate){
+    LocalDate localDate = AppUtil.checkDateValid(createdDate);
+    List<ProductDto> productDtoList= productService.getProductsByCreatedDate(localDate);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDtoList));
 
   }
 
