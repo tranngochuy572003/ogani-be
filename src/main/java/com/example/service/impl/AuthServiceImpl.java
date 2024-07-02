@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthorizationDto login(AuthenticationDto authenticationDto) {
         try {
             UserDetails userDetails = userService.loadUserByUsername(authenticationDto.getUserName());
-            String jwtToken = isAuthenticated(authenticationDto.getUserName(), authenticationDto.getPassword());
+            String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
 
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                     .collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String isAuthenticated(String email, String rawPassword) {
+    public String createTokenByValidAccount(String email, String rawPassword) {
         try {
             User user = userService.findUserByEmail(email);
             if (user != null) {
