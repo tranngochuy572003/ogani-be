@@ -15,4 +15,6 @@ public interface UserService {
   User findUserByEmail(String email);
   boolean existsByUsername(String username);
   UserDetails loadUserByUsername(String email);
+  User getUserByRefreshToken(String token);
+  void save(User user);
 }

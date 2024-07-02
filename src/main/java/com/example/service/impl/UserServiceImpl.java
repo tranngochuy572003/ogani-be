@@ -105,6 +105,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     return user;
   }
 
+  @Override
+  public User getUserByRefreshToken(String token) {
+    return userRepository.findUserByRefreshToken(token);
+  }
+
+  @Override
+  public void save(User user) {
+    userRepository.save(user);
+  }
 
 
 }

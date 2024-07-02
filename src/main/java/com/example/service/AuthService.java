@@ -9,4 +9,6 @@ public interface AuthService {
   AuthorizationDto login(AuthenticationDto authenticationDto) throws ParseException;
   String isAuthenticated(String email,String rawPassword);
   void register(RegisterDto registerDto);
+  void logout(String authorizationHeader);
+
 }
