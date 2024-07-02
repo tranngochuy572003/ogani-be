@@ -37,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ImageService imageService;
 
+
     @Override
     public void addProduct(ProductDto productDto, MultipartFile[] files) {
         if (AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
@@ -114,6 +115,17 @@ public class ProductServiceImpl implements ProductService {
                     imageService.deleteByUrlImg(url);
                 }
             }
+        }
+        else {
+            throw new NotFoundException(VALUE_NO_EXIST);
+        }
+    }
+
+    @Override
+    public ProductDto getProductById(String id) {
+        Optional<Product> product = productRepository.findById(id);
+        if(product.isPresent()){
+            return ProductMapper.toDto(product.get());
         }
         else {
             throw new NotFoundException(VALUE_NO_EXIST);
