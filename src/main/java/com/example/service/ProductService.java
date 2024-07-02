@@ -4,6 +4,7 @@ import com.example.dto.ProductDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ProductService {
@@ -14,5 +15,6 @@ public interface ProductService {
 
   ProductDto getProductById(String id);
   ProductDto getProductByName(String name);
+  List<ProductDto> getProductsByCreatedDate(LocalDate localDate);
 
 }

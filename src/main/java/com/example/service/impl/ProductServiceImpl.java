@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,5 +144,10 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
+    }
+
+    @Override
+    public List<ProductDto> getProductsByCreatedDate(LocalDate localDate) {
+        return ProductMapper.toListDto(productRepository.findByCreatedDateBetween(localDate.atStartOfDay(),localDate.plusDays(1).atStartOfDay()));
     }
 }
