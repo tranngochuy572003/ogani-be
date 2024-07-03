@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
 
             List<CartDetail> cartDetailList = new ArrayList<>();
             for (CartDetailDto cartDetailInList : cartDetailDto) {
-                if(cartDetailInList.getQuantityProduct() < 0 || cartDetailInList.getQuantityProduct()==0){
+                if (cartDetailInList.getQuantityProduct() <=0 ) {
                     throw new BadRequestException(FIELD_INVALID);
                 }
 
