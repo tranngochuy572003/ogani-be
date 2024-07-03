@@ -16,14 +16,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.example.common.MessageConstant.*;
 
 @Service
 public class CartServiceImpl implements CartService {
     @Autowired
-    UserService userService ;
+    UserService userService;
     @Autowired
     ProductService productService;
     @Autowired
@@ -39,8 +38,8 @@ public class CartServiceImpl implements CartService {
 
         if(cart==null){
             Cart newCart = new Cart();
-            newCart.setId(UUID.randomUUID().toString());
             newCart.setUsers(user);
+            cartRepository.save(newCart);
 
             List<CartDetail> cartDetailList = new ArrayList<>();
             for (CartDetailDto cartDetailInList : cartDetailDto) {
