@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.dto.ProductDto;
+import com.example.entity.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public interface ProductService {
   void updateProduct(String id , ProductDto productDto,MultipartFile [] multipartFile) throws IOException;
 
   ProductDto getProductById(String id);
+  Product findProductById(String id);
   ProductDto getProductByName(String name);
   List<ProductDto> getProductsByCreatedDate(LocalDate localDate);
   void deleteById(String id);

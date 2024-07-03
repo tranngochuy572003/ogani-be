@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.common.MessageConstant.FIELD_INVALID;
+import static com.example.common.MessageConstant.*;
 
 
 @Service
@@ -54,6 +54,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
   }
 
+  @Override
+  public User findUserById(String id) {
+    Optional<User> user = userRepository.findUserById(id);
+    if(user.isPresent()){
+      return user.get();
+    }
+    else {
+      throw new BadRequestException(VALUE_NO_EXIST);
+    }
+  }
 
 
   @Override
