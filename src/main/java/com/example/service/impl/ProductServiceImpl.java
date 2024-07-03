@@ -134,6 +134,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product findProductById(String id) {
+        Optional<Product> product = productRepository.findById(id);
+        if(product.isPresent()){
+            return product.get();
+        }
+        else {
+            throw new NotFoundException(VALUE_NO_EXIST);
+        }    }
+
+    @Override
     public ProductDto getProductByName(String name) {
         if (AppUtil.containsSpecialCharacters(name)) {
             throw new BadRequestException(FIELD_INVALID);
