@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 import static com.example.common.MessageConstant.*;
 
@@ -74,49 +76,38 @@ public class CartServiceImpl implements CartService {
         if (cart.isPresent()) {
             if (cartDetailDtoList.isEmpty()) {
                 cartDetailService.deleteAllByCarts(cart.get());
+                return;
             }
             List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart.get());
-            List<String> listProductIdEntity = getListProductIdFromCartDetailList(cartDetailList);
-            List<String> listProductIdDto = getListProductIdFromCartDetailDtoList(cartDetailDtoList);
-
-            for (String productId : listProductIdEntity) {
-               if(!listProductIdDto.contains(productId)){
-                   cartDetailService.deleteCartDetailByProductId(productId);
-               }
-            }
-            for (CartDetailDto cartDetailDto : cartDetailDtoList) {
-                Product product = productService.findProductById(cartDetailDto.getProductId());
-                if (listProductIdEntity.contains(cartDetailDto.getProductId())) {
-                    CartDetail cartDetail = cartDetailService.findByProducts(product);
-                    CartDetailMapper.toUpdateEntity(cartDetail, cartDetailDto);
-                    cartDetailService.save(cartDetail);
+            Map<String, CartDetailDto> mapProductId = getMapCartDetailDto(cartDetailDtoList);
+            for (CartDetail cartDetail : cartDetailList) {
+                String productId = cartDetail.getProducts().getId();
+                if (mapProductId.get(productId) == null) {
+                    cartDetailService.deleteCartDetailByProductId(productId);
                 } else {
-                    CartDetail newCartDetail = CartDetailMapper.toEntity(cartDetailDto);
-                    newCartDetail.setProducts(product);
-                    newCartDetail.setCarts(cart.get());
-                    cartDetailService.save(newCartDetail);
+                    CartDetailMapper.toUpdateEntity(cartDetail, mapProductId.get(productId));
+                    cartDetailService.save(cartDetail);
                 }
+                mapProductId.remove(productId);
+            }
+            for (String productid : mapProductId.keySet()) {
+                Product product = productService.findProductById(productid);
+                CartDetail newCartDetail = CartDetailMapper.toEntity(mapProductId.get(productid));
+                newCartDetail.setProducts(product);
+                newCartDetail.setCarts(cart.get());
+                cartDetailService.save(newCartDetail);
             }
         } else {
-            throw new BadRequestException(VALUE_EXISTED);
+            throw new BadRequestException(VALUE_NO_EXIST);
         }
     }
 
-    @Override
-    public List<String> getListProductIdFromCartDetailList(List<CartDetail> cartDetails) {
-        List<String> listProductIdEntity = new ArrayList<>();
-        for (CartDetail cartDetail : cartDetails) {
-            listProductIdEntity.add(cartDetail.getProducts().getId());
-        }
-        return listProductIdEntity;
-    }
 
-    @Override
-    public List<String> getListProductIdFromCartDetailDtoList(List<CartDetailDto> cartDetailDtos) {
-        List<String> listProductIdDto = new ArrayList<>();
+    private Map<String, CartDetailDto> getMapCartDetailDto(List<CartDetailDto> cartDetailDtos) {
+        Map<String, CartDetailDto> result = new HashMap<>();
         for (CartDetailDto cartDetailDto : cartDetailDtos) {
-            listProductIdDto.add(cartDetailDto.getProductId());
+            result.put(cartDetailDto.getProductId(), cartDetailDto);
         }
-        return listProductIdDto;
+        return result;
     }
 }
