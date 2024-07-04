@@ -7,7 +7,6 @@ import com.example.entity.Product;
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.mapper.CartDetailMapper;
-import com.example.repository.CartDetailRepository;
 import com.example.repository.CartRepository;
 import com.example.service.CartDetailService;
 import com.example.service.CartService;
@@ -78,8 +77,17 @@ public class CartServiceImpl implements CartService {
             }
             List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart.get());
             List<String> listProductId = new ArrayList<>();
+            List<String> listProductIdDto = new ArrayList<>();
             for (CartDetail cartDetail : cartDetailList) {
                 listProductId.add(cartDetail.getProducts().getId());
+            }
+            for (CartDetailDto cartDetailDto : cartDetailDtoList) {
+                listProductIdDto.add(cartDetailDto.getProductId());
+            }
+            for (String productId : listProductId) {
+               if(!listProductIdDto.contains(productId)){
+                   cartDetailService.deleteCartDetailByProductId(productId);
+               }
             }
             for (CartDetailDto cartDetailDto : cartDetailDtoList) {
                 Product product = productService.findProductById(cartDetailDto.getProductId());

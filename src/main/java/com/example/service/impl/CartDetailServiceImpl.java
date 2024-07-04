@@ -29,4 +29,9 @@ public class CartDetailServiceImpl implements CartDetailService{
     public void save(CartDetail cartDetail) {
         cartDetailRepository.save(cartDetail);
     }
+
+    @Override
+    public void deleteCartDetailByProductId(String productId) {
+        cartDetailRepository.deleteCartDetailByProducts(productId);
+    }
 }

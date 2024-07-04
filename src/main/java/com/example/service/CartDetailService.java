@@ -12,4 +12,5 @@ public interface CartDetailService {
     List<CartDetail> findByCarts(Cart cart);
     CartDetail findByProducts(Product product);
     void save(CartDetail cartDetail);
+    void deleteCartDetailByProductId(String productId);
 }

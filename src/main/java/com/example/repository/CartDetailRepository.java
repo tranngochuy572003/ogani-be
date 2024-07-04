@@ -19,4 +19,8 @@ public interface CartDetailRepository  extends JpaRepository<CartDetail,String> 
     @Transactional
     @Query("DELETE FROM cartDetails  cd WHERE cd.carts = :cart")
     void deleteAllByCarts(Cart cart);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM cartDetails  cd WHERE cd.products.id = :productId")
+    void deleteCartDetailByProducts(String productId);
 }
