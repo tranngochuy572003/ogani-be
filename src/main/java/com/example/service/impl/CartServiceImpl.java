@@ -7,7 +7,9 @@ import com.example.entity.Product;
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.mapper.CartDetailMapper;
+import com.example.repository.CartDetailRepository;
 import com.example.repository.CartRepository;
+import com.example.service.CartDetailService;
 import com.example.service.CartService;
 import com.example.service.ProductService;
 import com.example.service.UserService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.common.MessageConstant.*;
 
@@ -27,6 +30,9 @@ public class CartServiceImpl implements CartService {
     ProductService productService;
     @Autowired
     CartRepository cartRepository;
+    @Autowired
+    CartDetailService cartDetailService;
+
 
     @Override
     public void createCart(String userId, List<CartDetailDto> cartDetailDto) {
@@ -63,6 +69,33 @@ public class CartServiceImpl implements CartService {
             throw new BadRequestException(VALUE_EXISTED);
         }
     }
-
-
+    @Override
+    public void updateCart(String cartId, List<CartDetailDto> cartDetailDtoList) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if (cart.isPresent()) {
+            if (cartDetailDtoList.isEmpty()) {
+                cartDetailService.deleteAllByCarts(cart.get());
+            }
+            List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart.get());
+            List<String> listProductId = new ArrayList<>();
+            for (CartDetail cartDetail : cartDetailList) {
+                listProductId.add(cartDetail.getProducts().getId());
+            }
+            for (CartDetailDto cartDetailDto : cartDetailDtoList) {
+                Product product = productService.findProductById(cartDetailDto.getProductId());
+                if (listProductId.contains(cartDetailDto.getProductId())) {
+                    CartDetail cartDetail = cartDetailService.findByProducts(product);
+                    CartDetailMapper.toUpdateEntity(cartDetail, cartDetailDto);
+                    cartDetailService.save(cartDetail);
+                } else {
+                    CartDetail newCartDetail = CartDetailMapper.toEntity(cartDetailDto);
+                    newCartDetail.setProducts(product);
+                    newCartDetail.setCarts(cart.get());
+                    cartDetailService.save(newCartDetail);
+                }
+            }
+        } else {
+            throw new BadRequestException(VALUE_EXISTED);
+        }
+    }
 }
