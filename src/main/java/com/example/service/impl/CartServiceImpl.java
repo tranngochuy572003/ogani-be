@@ -76,22 +76,17 @@ public class CartServiceImpl implements CartService {
                 cartDetailService.deleteAllByCarts(cart.get());
             }
             List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart.get());
-            List<String> listProductId = new ArrayList<>();
-            List<String> listProductIdDto = new ArrayList<>();
-            for (CartDetail cartDetail : cartDetailList) {
-                listProductId.add(cartDetail.getProducts().getId());
-            }
-            for (CartDetailDto cartDetailDto : cartDetailDtoList) {
-                listProductIdDto.add(cartDetailDto.getProductId());
-            }
-            for (String productId : listProductId) {
+            List<String> listProductIdEntity = getListProductIdFromCartDetailList(cartDetailList);
+            List<String> listProductIdDto = getListProductIdFromCartDetailDtoList(cartDetailDtoList);
+
+            for (String productId : listProductIdEntity) {
                if(!listProductIdDto.contains(productId)){
                    cartDetailService.deleteCartDetailByProductId(productId);
                }
             }
             for (CartDetailDto cartDetailDto : cartDetailDtoList) {
                 Product product = productService.findProductById(cartDetailDto.getProductId());
-                if (listProductId.contains(cartDetailDto.getProductId())) {
+                if (listProductIdEntity.contains(cartDetailDto.getProductId())) {
                     CartDetail cartDetail = cartDetailService.findByProducts(product);
                     CartDetailMapper.toUpdateEntity(cartDetail, cartDetailDto);
                     cartDetailService.save(cartDetail);
@@ -105,5 +100,23 @@ public class CartServiceImpl implements CartService {
         } else {
             throw new BadRequestException(VALUE_EXISTED);
         }
+    }
+
+    @Override
+    public List<String> getListProductIdFromCartDetailList(List<CartDetail> cartDetails) {
+        List<String> listProductIdEntity = new ArrayList<>();
+        for (CartDetail cartDetail : cartDetails) {
+            listProductIdEntity.add(cartDetail.getProducts().getId());
+        }
+        return listProductIdEntity;
+    }
+
+    @Override
+    public List<String> getListProductIdFromCartDetailDtoList(List<CartDetailDto> cartDetailDtos) {
+        List<String> listProductIdDto = new ArrayList<>();
+        for (CartDetailDto cartDetailDto : cartDetailDtos) {
+            listProductIdDto.add(cartDetailDto.getProductId());
+        }
+        return listProductIdDto;
     }
 }

@@ -125,7 +125,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         User user = userService.findUserByEmail(userName);
 
         ZoneId vietnamZoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-        LocalDateTime nowInVietnam = LocalDateTime.now(vietnamZoneId).plusMinutes(5);
+        LocalDateTime nowInVietnam = LocalDateTime.now(vietnamZoneId).plusHours(24);
         long epochSeconds = nowInVietnam.toEpochSecond(ZoneOffset.ofHours(7));
 
         JSONObject payload = new JSONObject();
