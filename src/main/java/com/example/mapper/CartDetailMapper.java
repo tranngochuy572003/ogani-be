@@ -18,4 +18,10 @@ public class CartDetailMapper {
     cartDetail.setQuantityProduct(cartDetailDto.getQuantityProduct());
     return cartDetail;
   }
+
+  public static CartDetail toUpdateEntity(CartDetail cartDetail , CartDetailDto cartDetailDto) {
+    cartDetail.setChosen(cartDetailDto.isChosen());
+    cartDetail.setQuantityProduct(cartDetailDto.getQuantityProduct());
+    return cartDetail;
+  }
 }

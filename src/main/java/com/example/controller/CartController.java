@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.common.MessageConstant.ITEM_CREATED_SUCCESS;
+import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
+
 @RestController
 @RequestMapping("/api/v1/carts")
 public class CartController {
@@ -25,4 +27,14 @@ public class CartController {
         response.setMessage(ITEM_CREATED_SUCCESS);
         return ResponseEntity.ok(response);
     }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PutMapping ("/updateCart/{cartId}")
+    public ResponseEntity<ApiResponse> updateCart(@PathVariable String cartId, @RequestBody List<CartDetailDto> cartDetailDto) {
+        cartService.updateCart(cartId,cartDetailDto);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setMessage(ITEM_UPDATED_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
 }
