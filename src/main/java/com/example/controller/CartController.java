@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.api.ApiResponse;
 import com.example.dto.CartDetailDto;
+import com.example.dto.CartDto;
 import com.example.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,15 @@ public class CartController {
         cartService.updateCart(cartId,cartDetailDto);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value());
         response.setMessage(ITEM_UPDATED_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @GetMapping("/getByUserId/{userId}")
+    public ResponseEntity<ApiResponse> getByUserId(@PathVariable String userId) {
+        CartDto cartDto = cartService.getByUserId(userId);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setData(cartDto);
         return ResponseEntity.ok(response);
     }
 
