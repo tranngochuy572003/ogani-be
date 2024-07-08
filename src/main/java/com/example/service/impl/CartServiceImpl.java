@@ -135,4 +135,16 @@ public class CartServiceImpl implements CartService {
         return new CartDto(cart.getId(),cart.getUsers().getId(),totalPrice,cartDetailInfoDto);
     }
 
+    @Override
+    public CartDto getByCartId(String cartId) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if(cart.isPresent()){
+            String userId = cart.get().getUsers().getId();
+            return getByUserId(userId);
+        }
+        else {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
+    }
+
 }

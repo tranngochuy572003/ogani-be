@@ -47,4 +47,12 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @GetMapping("/getByCartId/{cartId}")
+    public ResponseEntity<ApiResponse> getByCartId(@PathVariable String cartId) {
+        CartDto cartDto = cartService.getByCartId(cartId);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setData(cartDto);
+        return ResponseEntity.ok(response);
+    }
 }
