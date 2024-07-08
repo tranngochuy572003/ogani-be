@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.dto.CartDetailDto;
+import com.example.dto.CartDetailInfoDto;
 import com.example.dto.CartDto;
 
 import com.example.entity.*;
@@ -113,7 +114,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDto getByUserId(String userId) {
         long totalPrice = 0L;
-        List<CartDto.CartDetailDto> cartDetailResponse = new ArrayList<>();
+        List<CartDetailInfoDto> cartDetailInfoDto = new ArrayList<>();
         Cart cart = cartRepository.findByUserId(userId);
         List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart);
         for(CartDetail cartDetail : cartDetailList){
@@ -124,14 +125,14 @@ public class CartServiceImpl implements CartService {
                     imageUrls.add(image.getUrlImg());
                 }
             }
-            CartDto.CartDetailDto cartDetailInfo= new CartDto.CartDetailDto(product.getId(),product.getNameProduct(),imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
+            CartDetailInfoDto cartDetailInfo= new CartDetailInfoDto(product.getId(),product.getNameProduct(),imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
             if(cartDetail.isChosen())
             {
                 totalPrice+=product.getPrice()*cartDetail.getQuantityProduct();
             }
-            cartDetailResponse.add(cartDetailInfo);
+            cartDetailInfoDto.add(cartDetailInfo);
         }
-        return new CartDto(cart.getId(),cart.getUsers().getId(),totalPrice,cartDetailResponse);
+        return new CartDto(cart.getId(),cart.getUsers().getId(),totalPrice,cartDetailInfoDto);
     }
 
 }
