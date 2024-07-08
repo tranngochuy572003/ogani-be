@@ -13,10 +13,10 @@ public class CartDto {
     private String cartId;
     private String userId;
     private Long totalPrice;
-    private List<CartDetailResponse> cartDetail;
+    private List<CartDetailDto> cartDetail;
 
 
-    public CartDto(String cartId, String userId, Long totalPrice, List<CartDetailResponse> cartDetail) {
+    public CartDto(String cartId, String userId, Long totalPrice, List<CartDetailDto> cartDetail) {
         this.cartId = cartId;
         this.userId = userId;
         this.totalPrice = totalPrice;
@@ -26,7 +26,7 @@ public class CartDto {
 
     @Data
     @NoArgsConstructor
-    public static class CartDetailResponse {
+    public static class CartDetailDto {
         private String productId;
         private String name;
         private List<String> imageURL;
@@ -35,7 +35,7 @@ public class CartDto {
         private Boolean isChosen;
 
 
-        public CartDetailResponse(String productId, String name, List<String> imageURL, Long quantity, Long price, Boolean isChosen) {
+        public CartDetailDto(String productId, String name, List<String> imageURL, Long quantity, Long price, Boolean isChosen) {
             this.productId = productId;
             this.name = name;
             this.imageURL = imageURL;

@@ -1,7 +1,6 @@
 package com.example.service.impl;
 
 import com.example.dto.CartDetailDto;
-import com.example.dto.CartDto.CartDetailResponse;
 import com.example.dto.CartDto;
 
 import com.example.entity.*;
@@ -114,7 +113,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDto getByUserId(String userId) {
         long totalPrice = 0L;
-        List<CartDetailResponse> cartDetailResponse = new ArrayList<>();
+        List<CartDto.CartDetailDto> cartDetailResponse = new ArrayList<>();
         Cart cart = cartRepository.findByUserId(userId);
         List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart);
         for(CartDetail cartDetail : cartDetailList){
@@ -125,7 +124,7 @@ public class CartServiceImpl implements CartService {
                     imageUrls.add(image.getUrlImg());
                 }
             }
-            CartDetailResponse cartDetailInfo= new CartDetailResponse(product.getId(),product.getNameProduct(),imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
+            CartDto.CartDetailDto cartDetailInfo= new CartDto.CartDetailDto(product.getId(),product.getNameProduct(),imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
             if(cartDetail.isChosen())
             {
                 totalPrice+=product.getPrice()*cartDetail.getQuantityProduct();
