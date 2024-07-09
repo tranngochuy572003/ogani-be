@@ -76,6 +76,7 @@ public class CartServiceImpl implements CartService {
         if (cart.isPresent()) {
             if (cartDetailDtoList.isEmpty()) {
                 cartDetailService.deleteAllByCarts(cart.get());
+                deleteCartById(cartId);
                 return;
             }
             List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart.get());
@@ -145,6 +146,10 @@ public class CartServiceImpl implements CartService {
         else {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
+    }
+    @Override
+    public void deleteCartById(String cartId) {
+        cartRepository.deleteCartById(cartId);
     }
 
 }
