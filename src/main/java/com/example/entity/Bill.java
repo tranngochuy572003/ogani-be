@@ -2,6 +2,7 @@ package com.example.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity(name = "bills")
 @Data
@@ -16,6 +17,8 @@ public class Bill extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "userId")
   private User users;
+  @OneToMany(mappedBy = "bills", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<BillDetail> billDetailList;
 
 }
 
