@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.example.common.MessageConstant.ORDER_CONFIRM_SUCCESS;
 
 
@@ -31,6 +33,13 @@ public class BillController {
         billService.confirmOrder(orderDto,userId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value());
         response.setMessage(ORDER_CONFIRM_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/getBillByUserId/{userId}")
+    public ResponseEntity<ApiResponse> getBillByUserId(@PathVariable String userId) {
+        List<BillDto> billDtoList = billService.getBillByUserId(userId);
+        ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+        response.setData(billDtoList);
         return ResponseEntity.ok(response);
     }
 }
