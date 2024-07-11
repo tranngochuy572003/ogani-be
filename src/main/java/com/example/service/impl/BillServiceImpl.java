@@ -75,4 +75,13 @@ public class BillServiceImpl implements BillService {
         billRepository.save(bill);
         return bill;
     }
+    @Override
+    public List<BillDto> getBillByUserId(String userId) {
+        List<Bill> billList= billRepository.findByUsersId(userId);
+        List<BillDto> billDtoList = new ArrayList<>();
+        for(Bill bill :billList){
+            billDtoList.add(getBillById(bill.getId()));
+        }
+        return billDtoList;
+    }
 }
