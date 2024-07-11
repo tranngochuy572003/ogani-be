@@ -13,6 +13,8 @@ public class Bill extends BaseEntity {
   private Double tax;
   @Column
   private Long totalPrice ;
+  @Column
+  private boolean isConfirm ;
 
   @ManyToOne
   @JoinColumn(name = "userId")
