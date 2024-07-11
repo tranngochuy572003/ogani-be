@@ -11,7 +11,6 @@ import com.example.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,10 +57,8 @@ public class BillServiceImpl implements BillService {
             bill.get().setTotalPrice((long) totalPrice);
             billRepository.save(bill.get());
 
-            LocalDateTime currentDate = LocalDateTime.now();
-            return new BillDto(bill.get().getId(),bill.get().getUsers().getId(),currentDate,cartDto.getTotalPrice(),billDetailDtoList);
-        }
-        else {
+            return new BillDto(bill.get().getId(), bill.get().getUsers().getId(), bill.get().getCreatedDate(), cartDto.getTotalPrice(), billDetailDtoList);
+        } else {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
     }
@@ -77,10 +74,22 @@ public class BillServiceImpl implements BillService {
     }
     @Override
     public List<BillDto> getBillByUserId(String userId) {
-        List<Bill> billList= billRepository.findByUsersId(userId);
+        List<Bill> billList = billRepository.findByUsersId(userId);
         List<BillDto> billDtoList = new ArrayList<>();
-        for(Bill bill :billList){
-            billDtoList.add(getBillById(bill.getId()));
+        List<BillDetailDto> billDetailDtoList = new ArrayList<>();
+        for (Bill bill : billList) {
+            CartDto cartDto = cartService.getByUserId(bill.getUsers().getId());
+            List<CartDetailInfoDto> cartDetailInfoDtoList = cartDto.getCartDetail();
+            List<BillDetail> billDetails = billDetailService.findByBillsId(bill.getId());
+            for (BillDetail billDetail : billDetails) {
+                BillDetailDto billDetailDto=new BillDetailDto();
+                for (CartDetailInfoDto cartDetailInfoDto : cartDetailInfoDtoList) {
+                    billDetailDto  = new BillDetailDto(cartDetailInfoDto.getQuantity(), billDetail.getPrice(), billDetail.getNameProduct(), billDetail.getUrlImg());
+                }
+                billDetailDtoList.add(billDetailDto);
+            }
+            BillDto billDto = new BillDto(bill.getId(), userId, bill.getCreatedDate(), bill.getTotalPrice(), billDetailDtoList);
+            billDtoList.add(billDto);
         }
         return billDtoList;
     }
