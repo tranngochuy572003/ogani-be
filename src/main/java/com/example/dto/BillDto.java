@@ -16,5 +16,5 @@ public class BillDto {
   private String userId;
   private LocalDateTime createdDate;
   private Long totalAmount;
-  List<BillDetailDto> billDetailDtoList;
+  private List<BillDetailDto> billDetailDtoList;
 }

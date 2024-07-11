@@ -27,7 +27,7 @@ public class BillController {
     }
 
     @PostMapping("/confirmOrder/{userId}")
-    public ResponseEntity<ApiResponse> getBillById(@RequestBody OrderDto orderDto ,@PathVariable String userId) {
+    public ResponseEntity<ApiResponse> confirmOrder(@RequestBody OrderDto orderDto ,@PathVariable String userId) {
         billService.confirmOrder(orderDto,userId);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value());
         response.setMessage(ORDER_CONFIRM_SUCCESS);
