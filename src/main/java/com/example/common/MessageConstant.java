@@ -22,6 +22,7 @@ public class MessageConstant {
   public static final String REFRESH_TOKEN_EXPIRED="Refresh token was expired. Please make a new sign in request";
 
 
+  public static final String ORDER_CONFIRM_SUCCESS="Order is confirmed";
 
 
 

@@ -3,15 +3,18 @@ package com.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillDto {
-
-  private Double tax;
-  private Long totalPrice;
-
+  private String billId;
+  private String userId;
+  private LocalDateTime createdDate;
+  private Long totalAmount;
+  List<BillDetailDto> billDetailDtoList;
 }
