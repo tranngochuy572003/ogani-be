@@ -4,6 +4,8 @@ import com.example.api.ApiResponse;
 import com.example.dto.ProductDto;
 import com.example.service.ProductService;
 import com.example.util.AppUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,12 @@ import static com.example.common.MessageConstant.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
+@Tag(name="Product Controller")
 public class ProductController {
   @Autowired
   private ProductService productService;
 
+  @Operation(summary = "Add new product")
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addProduct(
@@ -33,12 +37,15 @@ public class ProductController {
       response.setMessage(ITEM_CREATED_SUCCESS);
       return ResponseEntity.ok(response);
   }
+
+  @Operation(summary = "Get all products")
   @GetMapping("/getAllProducts")
   public ResponseEntity<ApiResponse> getAllProducts() {
     List<ProductDto> products = productService.getAllProducts();
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),products));
   }
 
+  @Operation(summary = "Update product by id")
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PatchMapping("/update/{id}")
   public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id, @RequestPart("productDto") ProductDto productDto, @RequestParam(value = "image",required = false) MultipartFile [] multipartFile) throws IOException {
@@ -48,12 +55,14 @@ public class ProductController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(summary = "Get product by id")
   @GetMapping("/getProductById/{id}")
   public ResponseEntity<ApiResponse> getProductById(@PathVariable String id) {
     ProductDto productDto = productService.getProductById(id);
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDto));
   }
 
+  @Operation(summary = "Get product by name")
   @GetMapping("/getProductByName/{name}")
   public ResponseEntity<ApiResponse> getProductByName(@PathVariable String name){
     ProductDto productDto = productService.getProductByName(name);
@@ -61,6 +70,7 @@ public class ProductController {
 
   }
 
+  @Operation(summary = "Get list product by created date")
   @GetMapping("/getProductByCreatedDate/{createdDate}")
   public ResponseEntity<ApiResponse> getProductByCreatedDate(@PathVariable String createdDate){
     LocalDate localDate = AppUtil.checkDateValid(createdDate);
@@ -68,6 +78,7 @@ public class ProductController {
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDtoList));
 
   }
+  @Operation(summary = "Delete product by id")
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @DeleteMapping("/deleteById/{id}")
   public ResponseEntity<ApiResponse> deleteById(@PathVariable String id){

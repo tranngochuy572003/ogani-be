@@ -18,6 +18,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig  {
+  public static final String[] WHITE_LIST_URL = {
+          "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs",
+          "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
+          "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/api/auth/**",
+          "/api/test/**", "/authenticate" ,"/api/v1/auth/login" ,"/api/v1/auth/register"
+  };
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
     return new JwtAuthenticationFilter();
@@ -50,7 +56,7 @@ public class WebSecurityConfig  {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/v1/auth/login" ,"/api/v1/auth/register").permitAll()
+                    .requestMatchers(WHITE_LIST_URL).permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
