@@ -9,6 +9,8 @@ import com.example.exception.ForbiddenException;
 import com.example.service.AuthService;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import static com.example.common.MessageConstant.REGISTER_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name="Auth Controller")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -33,6 +36,7 @@ public class AuthController {
     UserService userService;
 
 
+    @Operation(summary = "Login")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody AuthenticationDto authenticationDto) throws ParseException {
         AuthorizationDto authorizationDto = authService.login(authenticationDto);
@@ -41,6 +45,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Register")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterDto registerDto) {
         authService.register(registerDto);
@@ -49,12 +54,14 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Refresh token")
     @PostMapping("/refreshToken")
     public ResponseEntity<ApiResponse> refreshToken(@RequestHeader ("Authorization") String authorizationHeader) throws ForbiddenException {
         String refreshToken = authorizationHeader.replace("Bearer ", "");
         String token = jwtTokenService.createRefreshToken(refreshToken);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), new TokenDto(token)));
     }
+    @Operation(summary = "Log out")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(@RequestHeader ("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");

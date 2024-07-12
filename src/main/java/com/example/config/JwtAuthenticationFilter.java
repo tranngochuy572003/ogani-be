@@ -16,11 +16,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.text.ParseException;
+
+import static com.example.config.WebSecurityConfig.WHITE_LIST_URL;
+
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -28,13 +32,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserService userService;
     @Autowired
     private JwtTokenService jwtTokenService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private boolean checkPathValid(String path){
+        for (String pattern : WHITE_LIST_URL) {
+            if (pathMatcher.match(pattern, path) || path.startsWith(pattern.replace("/**", ""))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getServletPath();
-        if (path.equals("/api/v1/auth/login") || path.equals("/api/v1/auth/register")) {
+        boolean isWhitelisted = checkPathValid(path);
+        if (isWhitelisted) {
             filterChain.doFilter(request, response);
             return;
         }

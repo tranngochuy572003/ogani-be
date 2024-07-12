@@ -4,6 +4,8 @@ import com.example.api.ApiResponse;
 import com.example.dto.CartDetailDto;
 import com.example.dto.CartDto;
 import com.example.service.CartService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import static com.example.common.MessageConstant.ITEM_UPDATED_SUCCESS;
 
 @RestController
 @RequestMapping("/api/v1/carts")
+@Tag(name="Cart Controller")
 public class CartController {
     @Autowired
     private CartService cartService;
+    @Operation(summary = "Create cart by userId")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PostMapping("/createCart/{userId}")
     public ResponseEntity<ApiResponse> createCart(@PathVariable String userId, @RequestBody List<CartDetailDto> cartDetailDto) {
@@ -29,6 +33,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update cart by cartId")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PutMapping ("/updateCart/{cartId}")
     public ResponseEntity<ApiResponse> updateCart(@PathVariable String cartId, @RequestBody List<CartDetailDto> cartDetailDto) {
@@ -38,6 +43,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get cart by userId")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/getByUserId/{userId}")
     public ResponseEntity<ApiResponse> getByUserId(@PathVariable String userId) {
@@ -47,6 +53,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get cart by cartId")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/getByCartId/{cartId}")
     public ResponseEntity<ApiResponse> getByCartId(@PathVariable String cartId) {
