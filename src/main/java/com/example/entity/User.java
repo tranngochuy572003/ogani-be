@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity implements UserDetails {
+  public User(String id, LocalDateTime createdDate, LocalDateTime modifiedDate, String createdBy, String modifiedBy, String fullName, String userName, String password, String address, String phoneNumber, UserRole role, boolean isActive, String refreshToken, Collection<Product> product, List<Bill> bills, List<News> news, Cart cart) {
+    super(id, createdDate, modifiedDate, createdBy, modifiedBy);
+    this.fullName = fullName;
+    this.userName = userName;
+    this.password = password;
+    this.address = address;
+    this.phoneNumber = phoneNumber;
+    this.role = role;
+    this.isActive = isActive;
+    this.refreshToken = refreshToken;
+    this.product = product;
+    this.bills = bills;
+    this.news = news;
+    this.cart = cart;
+  }
 
   @Column
   private String fullName ;
