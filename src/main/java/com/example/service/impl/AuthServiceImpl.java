@@ -65,14 +65,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthorizationDto login(AuthenticationDto authenticationDto) {
-        try {
-            UserDetails userDetails = userService.loadUserByUsername(authenticationDto.getUserName());
-            String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
+
+        UserDetails userDetails = userService.loadUserByUsername(authenticationDto.getUserName());
+        String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
 
             List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                     .collect(Collectors.toList());
 
-            String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
+        String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
+        try {
             JWT jwt = JWTParser.parse(refreshToken);
             JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
             String userName = (String) claimsSet.getClaim("userName");
@@ -81,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
             userService.save(user);
             return new AuthorizationDto(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
         } catch (ParseException e) {
-            throw new BadRequestException(EMAIL_PASSWORD_INVALID);
+            throw new BadRequestException(TOKEN_INVALID);
 
         }
     }

@@ -22,4 +22,11 @@ public class UserDto {
     @JsonProperty(value = "isActive")
     private boolean isActive;
 
+    public UserDto(String userName, String fullName, String password, String address, String phoneNumber) {
+        this.userName = userName;
+        this.fullName = fullName;
+        this.password = password;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+    }
 }
