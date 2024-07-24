@@ -10,7 +10,6 @@ import com.example.entity.User;
 import com.example.enums.UserRole;
 import com.example.exception.BadRequestException;
 import com.example.repository.CartRepository;
-import com.example.service.CartDetailService;
 import com.example.service.ProductService;
 import com.example.service.UserService;
 import com.example.service.impl.CartServiceImpl;
@@ -39,8 +38,6 @@ public class CartServiceTest {
     private UserService userService;
     @Mock
     private ProductService productService;
-    @Mock
-    private CartDetailService cartDetailService;
 
     private CartDto cartDto;
     private List<CartDetailInfoDto> cartDetailInfoDtoList;
@@ -59,12 +56,12 @@ public class CartServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        user = new User("userId", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null, null);
+        user = new User("userId", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null);
         cartDetailInfoDto = new CartDetailInfoDto("productId", "name", null, 10L, 100L, true);
         cartDetailInfoDtoList = new ArrayList<>();
         cartDetailInfoDtoList.add(cartDetailInfoDto);
         cartDto = new CartDto("cartId", "userId", 100L, cartDetailInfoDtoList);
-        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null, null, cartDetailList);
+        product = new Product("name", true, 100L, "description", "information", 100L, null,null, cartDetailList);
         cartDetail = new CartDetail(true, 10L, product, cart);
         cartDetailList = new ArrayList<>();
         cartDetailList.add(cartDetail);
@@ -75,7 +72,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void testCreateCartThenSuccess() throws Exception {
+    void testCreateCartThenSuccess()  {
         when(userService.findUserById("userId")).thenReturn(user);
         when(cartRepository.findByUsers(user)).thenReturn(null);
         when(productService.findProductById("productId")).thenReturn(product);
@@ -91,7 +88,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void testCreateCartUserIdInvalidThenThrowBadRequest() throws Exception {
+    void testCreateCartUserIdInvalidThenThrowBadRequest()  {
         when(userService.findUserById("IdInvalid")).thenReturn(null);
         assertThrows(BadRequestException.class, () -> {
             cartService.createCart("IdInvalid", cartDetailDtoList);
@@ -100,28 +97,28 @@ public class CartServiceTest {
     }
 
     @Test
-    void testGetByUserIdValidThenSuccess() throws Exception {
+    void testGetByUserIdValidThenSuccess() {
         Mockito.when(cartRepository.findByUserId("userId")).thenReturn(cart);
         cartService.getByUserId("userId");
         Assertions.assertEquals(cart.getUsers().getId(), cartDto.getUserId());
     }
 
     @Test
-    void testGetByUserIdInvalidThenThrowBadRequest() throws Exception {
+    void testGetByUserIdInvalidThenThrowBadRequest(){
         Mockito.when(cartRepository.findByUserId("userIdInvalid")).thenReturn(null);
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> cartService.getByUserId(any(String.class)));
         Assertions.assertEquals(VALUE_NO_EXIST, badRequestException.getMessage());
     }
 
     @Test
-    void testGetByCartIdInValidThenThrowBadRequest() throws Exception {
+    void testGetByCartIdInValidThenThrowBadRequest() {
         Mockito.when(cartRepository.findById("idInvalid")).thenReturn(null);
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> cartService.getByCartId(any(String.class)));
         Assertions.assertEquals(VALUE_NO_EXIST, badRequestException.getMessage());
     }
 
     @Test
-    void testGetByCartIdValidThenSuccess() throws Exception {
+    void testGetByCartIdValidThenSuccess() {
         Mockito.when(cartRepository.findById("cartId")).thenReturn(Optional.ofNullable(cart));
         Mockito.when(cartRepository.findByUserId(cart.getUsers().getId())).thenReturn(cart);
         cartService.getByCartId("cartId");

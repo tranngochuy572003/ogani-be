@@ -11,4 +11,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product,String> {
   Product findProductByNameProduct(String name);
   List<Product> findByCreatedDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+  List<Product> findByPriceBetween(Long priceLowest, Long price);
+
 }

@@ -39,7 +39,7 @@ public class UserServiceTest {
     }
 
     private User mockUser() {
-        return new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName", "userName", "password", "address", "phoneNumber", UserRole.CUSTOMER, false, null, null, null, null, null);
+        return new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName", "userName", "password", "address", "phoneNumber", UserRole.CUSTOMER, false, null,null, null, null);
     }
 
     @Test
@@ -66,8 +66,8 @@ public class UserServiceTest {
 
     @Test
     public void testGetAllUserThenSuccess() {
-        User user1 = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null, null);
-        User user2 = new User("2", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName2", "userName2", "password2", "address2", "phoneNumber2", UserRole.CUSTOMER, false, null, null, null, null, null);
+        User user1 = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false,  null, null, null, null);
+        User user2 = new User("2", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName2", "userName2", "password2", "address2", "phoneNumber2", UserRole.CUSTOMER, false, null, null, null, null);
 
         UserDto userDto1 = new UserDto("userName1", "fullName1", "password1", "address1", "phoneNumber1");
         UserDto userDto2 = new UserDto("userName2", "fullName2", "password2", "address2", "phoneNumber2");

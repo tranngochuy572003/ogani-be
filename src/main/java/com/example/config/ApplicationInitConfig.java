@@ -29,6 +29,7 @@ public class ApplicationInitConfig {
                 user.setUserName(System.getenv("ADMIN_USER_NAME"));
                 user.setPassword(passwordEncoder.encode(System.getenv("ADMIN_PASSWORD")));
                 user.setRole(UserRole.ADMIN);
+                user.setActive(true);
                 userRepository.save(user);
                 log.warn("Admin has been created with default password: admin, please change it");
             }

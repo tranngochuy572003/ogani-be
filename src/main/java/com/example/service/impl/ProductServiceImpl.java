@@ -15,6 +15,7 @@ import com.example.service.ProductService;
 import com.example.util.AppUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static com.example.common.MessageConstant.*;
 
@@ -41,27 +43,33 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addProduct(ProductDto productDto, MultipartFile[] files) {
-        if (AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
+        if (AppUtil.containsSpecialCharacters(productDto.getCategory())
+                || AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
             throw new BadRequestException(FIELD_INVALID);
         }
+        if (!Pattern.compile("\\d+").matcher(productDto.getInventory().toString()).matches()
+                || !Pattern.compile("\\d+").matcher(productDto.getPrice().toString()).matches()) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+        if (productDto.getPrice() <= 0 || productDto.getInventory() < 0) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+
         boolean existProduct = productRepository.findProductByNameProduct(productDto.getNameProduct()) != null;
         if (existProduct) {
             throw new BadRequestException(VALUE_EXISTED);
         }
-        if (productDto.getPrice() < 0) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
         try {
-            if (AppUtil.containsSpecialCharacters(productDto.getCategory())) {
-                throw new BadRequestException(FIELD_INVALID);
-            }
-            Category category= categoryService.findCategoryByName(productDto.getCategory());
-            if(category==null){
+            Category category = categoryService.findCategoryByName(productDto.getCategory());
+            if (category == null) {
                 throw new BadRequestException(VALUE_NO_EXIST);
+            }
+            if (!category.isActive()) {
+                throw new BadRequestException(ITEM_UNACTIVED);
             }
             Product product = ProductMapper.toCreateEntity(productDto);
             product.setCategory(category);
-            List<Image> imageUrlList  = fileUpload.uploadFiles(files, product);
+            List<Image> imageUrlList = fileUpload.uploadFiles(files, product);
             product.setImages(imageUrlList);
             productRepository.save(product);
         } catch (IOException e) {
@@ -88,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
             if (!product.getNameProduct().equals(productDto.getNameProduct()) && existProduct) {
                 throw new BadRequestException(VALUE_EXISTED);
             }
-            if (productDto.getPrice() < 0 || productDto.getInventory() < 0) {
+            if (productDto.getPrice() <= 0 || productDto.getInventory() < 0) {
                 throw new BadRequestException(FIELD_INVALID);
             }
             try {
@@ -96,8 +104,11 @@ public class ProductServiceImpl implements ProductService {
                     throw new BadRequestException(FIELD_INVALID);
                 }
                 Category category = categoryService.findCategoryByName(productDto.getCategory());
-                if(category==null){
+                if (category == null) {
                     throw new BadRequestException(VALUE_NO_EXIST);
+                }
+                if (!category.isActive()) {
+                    throw new BadRequestException(ITEM_UNACTIVED);
                 }
                 Product productSaved = ProductMapper.toUpdateEntity(product, productDto);
                 productSaved.setCategory(category);
@@ -116,8 +127,7 @@ public class ProductServiceImpl implements ProductService {
                     imageService.deleteByUrlImg(url);
                 }
             }
-        }
-        else {
+        } else {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
     }
@@ -125,10 +135,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(String id) {
         Optional<Product> product = productRepository.findById(id);
-        if(product.isPresent()){
+        if (product.isPresent()) {
             return ProductMapper.toDto(product.get());
-        }
-        else {
+        } else {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
     }
@@ -136,12 +145,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findProductById(String id) {
         Optional<Product> product = productRepository.findById(id);
-        if(product.isPresent()){
+        if (product.isPresent()) {
             return product.get();
-        }
-        else {
+        } else {
             throw new NotFoundException(VALUE_NO_EXIST);
-        }    }
+        }
+    }
+
+    @Override
+    public Product findProductByName(String name) {
+        Product product = productRepository.findProductByNameProduct(name);
+        if (product != null) {
+            return product;
+        } else {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
+    }
 
     @Override
     public ProductDto getProductByName(String name) {
@@ -158,7 +177,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProductsByCreatedDate(LocalDate localDate) {
-        return ProductMapper.toListDto(productRepository.findByCreatedDateBetween(localDate.atStartOfDay(),localDate.plusDays(1).atStartOfDay()));
+        return ProductMapper.toListDto(productRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
     }
 
     @Override
@@ -170,5 +189,23 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
 
+    }
+
+    @Override
+    public List<ProductDto> getProductByPrice(String price) {
+        long priceValue;
+        try {
+            priceValue = Long.parseLong(price);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+        Long priceLowest = 10L;
+        List<Product> productList = productRepository.findByPriceBetween(priceLowest, priceValue);
+        return ProductMapper.toListDto(productList);
+    }
+
+    @Override
+    public void save(Product product) {
+        productRepository.save(product);
     }
 }

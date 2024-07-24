@@ -1,6 +1,6 @@
 package com.example.ogani.service;
 
-import com.example.api.AuthorizationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
@@ -62,7 +62,7 @@ public class AuthServiceTest {
         objectMapper = new ObjectMapper();
         authenticationDto = new AuthenticationDto("userName", "password");
         refreshToken = "eyJhbGciXVCJ9.eyJyb2xlIEyODkwMFkIn0.sC66PFwnHWyjHrb";
-        user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName", "userName", "password", "address", "phoneNumber", UserRole.CUSTOMER, false, refreshToken, null, null, null, null);
+        user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName", "userName", "password", "address", "phoneNumber", UserRole.CUSTOMER, false, refreshToken, null, null, null);
         token = "eyJhbGciOXVCJ9.eyJyb2xlIEyODkwMDFkIn0.sC66PjFwnHWyjHrb";
         registerDto = new RegisterDto("userName", "password", "password", "fullName", "address", "phoneNumber", "ROLE_USER");
         jwtMock = mock(JWT.class);
@@ -82,10 +82,8 @@ public class AuthServiceTest {
 
     @Test
     void testLoginSuccess() throws Exception {
-        // Input AuthenticationDTO
         AuthenticationDto authenticationDto = new AuthenticationDto("userName", "password");
 
-        // when to run success funtion
         UserDetails userDetails = mock(UserDetails.class);
         when(userService.loadUserByUsername(authenticationDto.getUserName())).thenReturn(userDetails);
         when(userService.findUserByEmail("userName")).thenReturn(user);
@@ -100,10 +98,8 @@ public class AuthServiceTest {
             when(jwtTokenService.createToken(authenticationDto.getUserName())).thenReturn(token);
             when(jwtTokenService.createRefreshToken(token)).thenReturn(refreshToken);
 
-            // output after call login
             AuthorizationDto result = authService.login(authenticationDto);
 
-            // Assert
             assertNotNull(result);
             assertEquals(token, result.getToken().getAccessToken());
             assertEquals(refreshToken, result.getToken().getRefreshToken());
@@ -116,7 +112,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    void testRegisterUserNameNotExistThenSuccess() throws Exception {
+    void testRegisterUserNameNotExistThenSuccess(){
         when(userService.existsByUsername(registerDto.getUserName())).thenReturn(true);
         UserDto userDto = UserMapper.toUserDto(registerDto);
         authService.register(registerDto);

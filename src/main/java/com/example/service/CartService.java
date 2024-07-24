@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.CartDetailDto;
 import com.example.dto.CartDto;
+import com.example.entity.Cart;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface CartService {
     CartDto getByUserId(String userId);
     CartDto getByCartId(String cartId);
     void deleteCartById(String cartId);
+    Cart getCartByUserId(String userId);
+    void save(Cart cart);
 }

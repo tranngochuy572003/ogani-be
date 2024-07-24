@@ -1,9 +1,7 @@
 package com.example.mapper;
 
 import com.example.dto.ImageDto;
-import com.example.dto.NewsDto;
 import com.example.entity.Image;
-import com.example.entity.News;
 
 public class ImageMapper {
   public static ImageDto toDto(Image image) {

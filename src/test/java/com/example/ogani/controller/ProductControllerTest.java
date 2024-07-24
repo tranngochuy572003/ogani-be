@@ -45,7 +45,6 @@ public class ProductControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
         objectMapper = new ObjectMapper();
         productDto = new ProductDto("nameProduct", true, 100L, "description", "information", 100L, "category", Arrays.asList("urlImg"));
-
     }
 
     @Test

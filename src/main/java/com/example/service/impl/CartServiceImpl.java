@@ -39,37 +39,48 @@ public class CartServiceImpl implements CartService {
     public void createCart(String userId, List<CartDetailDto> cartDetailDto) {
         User user = userService.findUserById(userId);
         Cart cart = cartRepository.findByUsers(user);
-        if(user==null){
+        if (user == null) {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
-
-        if(cart==null){
+        if (cart == null) {
             Cart newCart = new Cart();
-            newCart.setUsers(user);
-            cartRepository.save(newCart);
-
             List<CartDetail> cartDetailList = new ArrayList<>();
             for (CartDetailDto cartDetailInList : cartDetailDto) {
-                if (cartDetailInList.getQuantityProduct() <=0 ) {
+                Product product = productService.findProductById(cartDetailInList.getProductId());
+                if (cartDetailInList.getQuantityProduct() <= 0) {
                     throw new BadRequestException(FIELD_INVALID);
                 }
-
-                CartDetail cartDetail  = CartDetailMapper.toEntity(cartDetailInList);
-                Product product =productService.findProductById(cartDetailInList.getProductId());
-                if(product==null){
+                if (product == null) {
                     throw new BadRequestException(VALUE_NO_EXIST);
                 }
+                if (!product.isActive()) {
+                    throw new BadRequestException(ITEM_UNACTIVED);
+                }
+                if (product.getInventory() == 0) {
+                    throw new BadRequestException(OUT_OF_STOCK);
+                }
+                if (product.getInventory() < cartDetailInList.getQuantityProduct()) {
+                    throw new BadRequestException(PRODUCT_QUANTITY_UNENOUGH);
+                }
+            }
+
+
+            for (CartDetailDto cartDetailInList : cartDetailDto) {
+                Product product = productService.findProductById(cartDetailInList.getProductId());
+                CartDetail cartDetail = CartDetailMapper.toEntity(cartDetailInList);
+                newCart.setUsers(user);
+                cartRepository.save(newCart);
                 cartDetail.setProducts(product);
                 cartDetail.setCarts(newCart);
                 cartDetailList.add(cartDetail);
+                newCart.setCartDetails(cartDetailList);
+                cartRepository.save(newCart);
             }
-            newCart.setCartDetails(cartDetailList);
-            cartRepository.save(newCart);
-        }
-        else {
+        } else {
             throw new BadRequestException(VALUE_EXISTED);
         }
     }
+
     @Override
     public void updateCart(String cartId, List<CartDetailDto> cartDetailDtoList) {
         Optional<Cart> cart = cartRepository.findById(cartId);
@@ -91,9 +102,9 @@ public class CartServiceImpl implements CartService {
                 }
                 mapProductId.remove(productId);
             }
-            for (String productid : mapProductId.keySet()) {
-                Product product = productService.findProductById(productid);
-                CartDetail newCartDetail = CartDetailMapper.toEntity(mapProductId.get(productid));
+            for (String productId : mapProductId.keySet()) {
+                Product product = productService.findProductById(productId);
+                CartDetail newCartDetail = CartDetailMapper.toEntity(mapProductId.get(productId));
                 newCartDetail.setProducts(product);
                 newCartDetail.setCarts(cart.get());
                 cartDetailService.save(newCartDetail);
@@ -107,6 +118,19 @@ public class CartServiceImpl implements CartService {
     private Map<String, CartDetailDto> getMapCartDetailDto(List<CartDetailDto> cartDetailDtos) {
         Map<String, CartDetailDto> result = new HashMap<>();
         for (CartDetailDto cartDetailDto : cartDetailDtos) {
+            Product product = productService.findProductById(cartDetailDto.getProductId());
+            if (product == null) {
+                throw new BadRequestException(VALUE_NO_EXIST);
+            }
+            if (!product.isActive()) {
+                throw new BadRequestException(ITEM_UNACTIVED);
+            }
+            if (product.getInventory() == 0) {
+                throw new BadRequestException(OUT_OF_STOCK);
+            }
+            if (product.getInventory() < cartDetailDto.getQuantityProduct()) {
+                throw new BadRequestException(PRODUCT_QUANTITY_UNENOUGH);
+            }
             result.put(cartDetailDto.getProductId(), cartDetailDto);
         }
         return result;
@@ -118,7 +142,7 @@ public class CartServiceImpl implements CartService {
         List<CartDetailInfoDto> cartDetailInfoDto = new ArrayList<>();
         Cart cart = cartRepository.findByUserId(userId);
         List<CartDetail> cartDetailList = cartDetailService.findByCarts(cart);
-        for(CartDetail cartDetail : cartDetailList){
+        for (CartDetail cartDetail : cartDetailList) {
             Product product = productService.findProductById(cartDetail.getProducts().getId());
             List<String> imageUrls = new ArrayList<>();
             if (product.getImages() != null) {
@@ -126,30 +150,45 @@ public class CartServiceImpl implements CartService {
                     imageUrls.add(image.getUrlImg());
                 }
             }
-            CartDetailInfoDto cartDetailInfo= new CartDetailInfoDto(product.getId(),product.getNameProduct(),imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
-            if(cartDetail.isChosen())
-            {
-                totalPrice+=product.getPrice()*cartDetail.getQuantityProduct();
+            CartDetailInfoDto cartDetailInfo = new CartDetailInfoDto(product.getId(), product.getNameProduct(), imageUrls, cartDetail.getQuantityProduct(), product.getPrice(), cartDetail.isChosen());
+            if (cartDetail.isChosen()) {
+                totalPrice += product.getPrice() * cartDetail.getQuantityProduct();
             }
             cartDetailInfoDto.add(cartDetailInfo);
         }
-        return new CartDto(cart.getId(),cart.getUsers().getId(),totalPrice,cartDetailInfoDto);
+        return new CartDto(cart.getId(), cart.getUsers().getId(), totalPrice, cartDetailInfoDto);
     }
 
     @Override
     public CartDto getByCartId(String cartId) {
         Optional<Cart> cart = cartRepository.findById(cartId);
-        if(cart.isPresent()){
+        if (cart.isPresent()) {
             String userId = cart.get().getUsers().getId();
             return getByUserId(userId);
-        }
-        else {
+        } else {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
     }
+
     @Override
     public void deleteCartById(String cartId) {
         cartRepository.deleteCartById(cartId);
     }
+
+    @Override
+    public Cart getCartByUserId(String userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        if (cart == null) {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        } else {
+            return cart;
+        }
+    }
+
+    @Override
+    public void save(Cart cart) {
+        cartRepository.save(cart);
+    }
+
 
 }

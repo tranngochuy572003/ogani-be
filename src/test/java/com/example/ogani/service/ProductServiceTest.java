@@ -35,16 +35,15 @@ public class ProductServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null, null, null);
+        product = new Product("name", true, 100L, "description", "information", 100L, null, null,null);
         productDto = new ProductDto("nameProduct", true, 100L, "description", "information", 100L, "category", Arrays.asList("urlImg"));
-        category = new Category("name", "type", true, Arrays.asList(product), null);
+        category = new Category("name", "type", true, Arrays.asList(product));
         product.setCategory(category);
-
     }
 
 
     @Test
-    void testGetProductByCreatedDate() throws Exception {
+    void testGetProductByCreatedDate() {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             LocalDate createdDate = LocalDate.now();
             appUtilMock.when(() -> AppUtil.checkDateValid(anyString())).thenReturn(createdDate);
@@ -57,21 +56,16 @@ public class ProductServiceTest {
 
 
     @Test
-    void testDeleteByIdThenSuccess() throws Exception {
-//                try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
-//            appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(true);
+    void testDeleteByIdThenSuccess() {
         Mockito.when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
         productService.deleteById(anyString());
         verify(productRepository, times(1)).deleteById(anyString());
-        // }
-
     }
     @Test
-    void testDeleteByIdInvalidThenThrowNotFoundException() throws Exception {
+    void testDeleteByIdInvalidThenThrowNotFoundException() {
         Mockito.when(productRepository.findById(anyString())).thenReturn(Optional.empty());
         NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> productService.deleteById(anyString()));
         Assertions.assertEquals(VALUE_NO_EXIST, notFoundException.getMessage());
         verify(productRepository, never()).deleteById(anyString());
-
     }
 }

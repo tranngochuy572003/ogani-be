@@ -31,28 +31,43 @@ public class ProductController {
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addProduct(
           @RequestPart("productDto") ProductDto productDto,
-          @RequestParam("image") MultipartFile [] multipartFile) throws IOException {
+          @RequestParam(value = "image",required = false) MultipartFile [] multipartFile) throws IOException {
       productService.addProduct(productDto, multipartFile);
       ApiResponse response = new ApiResponse(HttpStatus.OK.value());
       response.setMessage(ITEM_CREATED_SUCCESS);
       return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Get all products")
-  @GetMapping("/getAllProducts")
-  public ResponseEntity<ApiResponse> getAllProducts() {
-    List<ProductDto> products = productService.getAllProducts();
-    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),products));
-  }
-
   @Operation(summary = "Update product by id")
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   @PatchMapping("/update/{id}")
-  public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id, @RequestPart("productDto") ProductDto productDto, @RequestParam(value = "image",required = false) MultipartFile [] multipartFile) throws IOException {
+  public ResponseEntity<ApiResponse> updateProduct(@PathVariable String id,
+                                                   @RequestPart("productDto") ProductDto productDto,
+                                                   @RequestParam(value = "image",required = false) MultipartFile [] multipartFile) throws IOException {
     productService.updateProduct(id, productDto,multipartFile);
     ApiResponse response = new ApiResponse(HttpStatus.OK.value());
     response.setMessage(ITEM_UPDATED_SUCCESS);
     return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(summary = "Delete product by id")
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  @DeleteMapping("/deleteById/{id}")
+  public ResponseEntity<ApiResponse> deleteById(@PathVariable String id){
+    productService.deleteById(id);
+    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
+    response.setMessage(ITEM_DELETED_SUCCESS);
+    return ResponseEntity.ok(response);
+
+  }
+
+  @Operation(summary = "Get all products")
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  @GetMapping("/getAllProducts")
+  public ResponseEntity<ApiResponse> getAllProducts() {
+    List<ProductDto> products = productService.getAllProducts();
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),products));
   }
 
   @Operation(summary = "Get product by id")
@@ -78,16 +93,12 @@ public class ProductController {
     return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDtoList));
 
   }
-  @Operation(summary = "Delete product by id")
-  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-  @DeleteMapping("/deleteById/{id}")
-  public ResponseEntity<ApiResponse> deleteById(@PathVariable String id){
-    productService.deleteById(id);
-    ApiResponse response = new ApiResponse(HttpStatus.OK.value());
-    response.setMessage(ITEM_DELETED_SUCCESS);
-    return ResponseEntity.ok(response);
 
+  @Operation(summary = "Get list product by price")
+  @GetMapping("/getProductByPrice/{price}")
+  public ResponseEntity<ApiResponse> getProductByPrice(@PathVariable String price){
+    List<ProductDto> productDtoList = productService.getProductByPrice(price);
+    return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),productDtoList));
   }
-
 
 }

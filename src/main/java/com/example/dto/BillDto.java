@@ -1,6 +1,7 @@
 package com.example.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,7 @@ public class BillDto {
   private String userId;
   private LocalDateTime createdDate;
   private Long totalAmount;
+  @JsonProperty("isConfirm")
+  private boolean isConfirm;
   private List<BillDetailDto> billDetailDtoList;
 }

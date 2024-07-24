@@ -49,8 +49,8 @@ public class CategoryControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
         objectMapper = new ObjectMapper();
-        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null, null, null);
-        category = new Category("name", "type", true, Arrays.asList(product), null);
+        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null);
+        category = new Category("name", "type", true, Arrays.asList(product));
         category.setId("id");
         categoryDto = new CategoryDto("name", "type", true);
     }

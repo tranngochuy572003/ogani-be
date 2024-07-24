@@ -1,8 +1,8 @@
 package com.example.controller;
 
 import com.example.api.ApiResponse;
-import com.example.api.AuthorizationDto;
-import com.example.api.TokenDto;
+import com.example.dto.AuthorizationDto;
+import com.example.dto.TokenDto;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 import com.example.exception.ForbiddenException;

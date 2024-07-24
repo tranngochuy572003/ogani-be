@@ -14,6 +14,7 @@ public class BillDetail extends BaseEntity{
     private String urlImg;
     private String nameProduct ;
     private Long price ;
+    private Long quantity ;
     @ManyToOne
     @JoinColumn(name = "billId")
     private Bill bills;

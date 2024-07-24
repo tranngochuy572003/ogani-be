@@ -76,12 +76,12 @@ public class CartControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
         objectMapper = new ObjectMapper();
-        user = new User("userId", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null, null);
+        user = new User("userId", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false,  null, null, null, null);
         cartDetailInfoDto = new CartDetailInfoDto("productId", "name", null, 10L, 100L, true);
         cartDetailInfoDtoList = new ArrayList<>();
         cartDetailInfoDtoList.add(cartDetailInfoDto);
         cartDto = new CartDto("cartId", "userId", 100L, cartDetailInfoDtoList);
-        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null, null, cartDetailList);
+        product = new Product("name", true, 100L, "description", "information", 100L, null, null, cartDetailList);
         product.setId("productId");
         cartDetail = new CartDetail(true, 10L, product, cart);
         cartDetailList = new ArrayList<>();
