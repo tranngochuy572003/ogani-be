@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User,String> {
   boolean existsByUserName(String username);
   User findUserByRefreshToken(String refreshToken);
 
+  User findByCartId(String cartId);
+
+
 }

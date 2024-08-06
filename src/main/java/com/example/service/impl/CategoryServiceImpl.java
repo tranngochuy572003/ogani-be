@@ -33,15 +33,19 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public List<CategoryDto> findByType(String type) {
+    List<Category> categoryList = categoryRepository.findByType(type);
     if (AppUtil.containsSpecialCharacters(type)) {
       throw new BadRequestException(FIELD_INVALID);
     }
-    return CategoryMapper.toListDto(categoryRepository.findByType(type));
-
+    if(categoryList.isEmpty()){
+      throw new BadRequestException(VALUE_NO_EXIST);
+    }
+    return CategoryMapper.toListDto(categoryList);
   }
   @Override
   public CategoryDto findByName(String name) {
-    if (AppUtil.containsSpecialCharacters(name)) {
+    if (AppUtil.containsSpecialCharacters(name)
+            ||name.chars().anyMatch(Character::isWhitespace)) {
       throw new BadRequestException(FIELD_INVALID);
     }
     CategoryDto categoryDto = new CategoryDto();
@@ -80,11 +84,9 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void addCategory(CategoryDto categoryDto) {
-    if (AppUtil.containsSpecialCharacters(categoryDto.getType())) {
-      throw new BadRequestException("Type is invalid");
-    }
-    if (AppUtil.containsSpecialCharacters(categoryDto.getName())) {
-      throw new BadRequestException("Name is invalid");
+    if (AppUtil.containsSpecialCharacters(categoryDto.getType())
+    ||AppUtil.containsSpecialCharacters(categoryDto.getName())) {
+      throw new BadRequestException(FIELD_INVALID);
     }
     boolean existCategory = categoryRepository.findByName(categoryDto.getName()) != null;
     if (existCategory) {

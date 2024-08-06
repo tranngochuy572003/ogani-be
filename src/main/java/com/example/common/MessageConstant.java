@@ -4,6 +4,7 @@ public class MessageConstant {
   public static final String EMAIL_PASSWORD_INVALID="Invalid email or password";
   public static final String FIELD_INVALID="Field is invalid";
   public static final String TOKEN_INVALID="Token is invalid";
+  public static final String FIELD_REQUIRED="Field required is not blank.";
 
   public static final String VALUE_NO_EXIST="Value doesn't exist";
   public static final String UNAUTHORIZED="Unauthorized";
@@ -13,6 +14,13 @@ public class MessageConstant {
   public static final String ITEM_UPDATED_SUCCESS="Item updated successfully";
   public static final String ITEM_DELETED_SUCCESS="Item deleted successfully";
   public static final String ACCESS_DENIED = "Access Denied: You do not have permission to access this resource.";
+  public static final String PRODUCT_QUANTITY_UNENOUGH = "Product quantity is not enough";
+  public static final String OUT_OF_STOCK = "The product is out of stock.";
+
+
+  public static final String ITEM_UNACTIVED="Item has stopped active";
+
+  public static final String ORDER_CONFIRMED="ORDER WAS CONFIRMED BEFORE";
 
   public static final String VALUE_EXISTED="Value existed";
   public static final String REGISTER_SUCCESS="Register successfully";
@@ -23,6 +31,7 @@ public class MessageConstant {
 
 
   public static final String ORDER_CONFIRM_SUCCESS="Order is confirmed";
+  public static final String ORDER_SUCCESS="Order Success";
 
 
 

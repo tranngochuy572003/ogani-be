@@ -10,8 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Bill extends BaseEntity {
   @Column
-  private Double tax;
-  @Column
   private Long totalPrice ;
   @Column
   private boolean isConfirm ;

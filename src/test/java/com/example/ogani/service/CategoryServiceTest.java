@@ -8,12 +8,10 @@ import com.example.mapper.CategoryMapper;
 import com.example.repository.CategoryRepository;
 import com.example.service.impl.CategoryServiceImpl;
 import com.example.util.AppUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -34,25 +32,17 @@ public class CategoryServiceTest {
     private Product product;
     private Category category;
     private CategoryDto categoryDto;
-    private CategoryMapper categoryMapper;
-
-
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null, null, null);
-        category = new Category("name", "type", true, Arrays.asList(product), null);
+        product = new Product("name", true, 100L, "description", "information", 100L, null, null, null);
+        category = new Category("name", "type", true, Arrays.asList(product));
         category.setId("id");
         categoryDto = new CategoryDto("name", "type", true);
-        objectMapper = new ObjectMapper();
-
     }
 
     @Test
-    void testGetCategoriesByTypeValidThenSuccess() throws Exception {
+    void testGetCategoriesByTypeValidThenSuccess() {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
             Mockito.when(categoryRepository.findByType("type")).thenReturn(Arrays.asList(category));
@@ -63,7 +53,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void testGetCategoriesByTypeInValidThenThrowBadRequest() throws Exception {
+    void testGetCategoriesByTypeInValidThenThrowBadRequest() {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(true);
         }

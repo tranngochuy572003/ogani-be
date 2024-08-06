@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity implements UserDetails {
-  public User(String id, LocalDateTime createdDate, LocalDateTime modifiedDate, String createdBy, String modifiedBy, String fullName, String userName, String password, String address, String phoneNumber, UserRole role, boolean isActive, String refreshToken, Collection<Product> product, List<Bill> bills, List<News> news, Cart cart) {
+  public User(String id, LocalDateTime createdDate, LocalDateTime modifiedDate, String createdBy, String modifiedBy, String fullName, String userName, String password, String address, String phoneNumber, UserRole role, boolean isActive, String refreshToken, Collection<Product> product, List<Bill> bills, Cart cart) {
     super(id, createdDate, modifiedDate, createdBy, modifiedBy);
     this.fullName = fullName;
     this.userName = userName;
@@ -29,9 +29,7 @@ public class User extends BaseEntity implements UserDetails {
     this.role = role;
     this.isActive = isActive;
     this.refreshToken = refreshToken;
-    this.product = product;
     this.bills = bills;
-    this.news = news;
     this.cart = cart;
   }
 
@@ -52,14 +50,8 @@ public class User extends BaseEntity implements UserDetails {
   @Column
   private String refreshToken;
 
-  @ManyToMany(mappedBy = "users")
-  private Collection<Product> product;
-
   @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
   private List<Bill> bills;
-
-  @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
-  private List<News> news;
 
   @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, optional = false)
   private Cart cart;

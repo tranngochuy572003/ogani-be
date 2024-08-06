@@ -26,8 +26,6 @@ public class Product extends BaseEntity {
   @Column
   private Long price ;
 
-  @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
-  private List<Review> reviews;
 
   @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
   private List<Image> images;
@@ -35,15 +33,6 @@ public class Product extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "categoryProduct_id")
   private Category category;
-
-  @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(
-          name = "products_users",
-          joinColumns = @JoinColumn(name = "productId", referencedColumnName = "id"),
-          inverseJoinColumns = @JoinColumn(name = "userId", referencedColumnName = "id")
-  )
-  private Collection<User> users ;
-
 
   @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
   private Collection<CartDetail> cartDetails;

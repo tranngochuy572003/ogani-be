@@ -1,6 +1,6 @@
 package com.example.service.impl;
 
-import com.example.api.AuthorizationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
@@ -37,20 +37,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-  public void register(RegisterDto registerDto) {
-    if(userService.existsByUsername(registerDto.getUserName())){
-      if(!registerDto.getConfirmPassword().equals(registerDto.getPassword())){
-        throw new BadRequestException(CONFIRM_PASSWORD_INCORRECT);
-      }
-      UserDto userDto = UserMapper.toUserDto(registerDto);
-      userService.addUser(userDto);
-    }
+    public void register(RegisterDto registerDto) {
+        if(userService.existsByUsername(registerDto.getUserName())) {
+            if(!registerDto.getConfirmPassword().equals(registerDto.getPassword())) {
+                throw new BadRequestException(CONFIRM_PASSWORD_INCORRECT);
+            }
+            UserDto userDto = UserMapper.toUserDto(registerDto);
+            userDto.setActive(true);
+            userService.addUser(userDto);
+        }
 
     }
 
     @Override
     public void logout(String authorizationHeader) {
-
         if (jwtTokenService.verifyExpiration(authorizationHeader)) {
             User user = userService.getUserByRefreshToken(authorizationHeader);
             if (user == null) {
@@ -69,8 +69,8 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = userService.loadUserByUsername(authenticationDto.getUserName());
         String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
 
-            List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-                    .collect(Collectors.toList());
+        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+                .collect(Collectors.toList());
 
         String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
         try {
@@ -78,6 +78,9 @@ public class AuthServiceImpl implements AuthService {
             JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
             String userName = (String) claimsSet.getClaim("userName");
             User user = userService.findUserByEmail(userName);
+            if (!user.isActive()) {
+                throw new BadRequestException(ITEM_UNACTIVED);
+            }
             user.setRefreshToken(refreshToken);
             userService.save(user);
             return new AuthorizationDto(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);

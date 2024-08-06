@@ -24,7 +24,7 @@ public class CartController {
     @Autowired
     private CartService cartService;
     @Operation(summary = "Create cart by userId")
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PreAuthorize("#userId==authentication.principal.id and hasAuthority('ROLE_CUSTOMER')")
     @PostMapping("/createCart/{userId}")
     public ResponseEntity<ApiResponse> createCart(@PathVariable String userId, @RequestBody List<CartDetailDto> cartDetailDto) {
         cartService.createCart(userId,cartDetailDto);
@@ -34,8 +34,8 @@ public class CartController {
     }
 
     @Operation(summary = "Update cart by cartId")
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    @PutMapping ("/updateCart/{cartId}")
+    @PreAuthorize("@userServiceImpl.isAuthorizedForCart(#cartId,authentication.principal.id) and hasAuthority('ROLE_CUSTOMER')")
+    @PatchMapping  ("/updateCart/{cartId}")
     public ResponseEntity<ApiResponse> updateCart(@PathVariable String cartId, @RequestBody List<CartDetailDto> cartDetailDto) {
         cartService.updateCart(cartId,cartDetailDto);
         ApiResponse response = new ApiResponse(HttpStatus.OK.value());
@@ -44,7 +44,7 @@ public class CartController {
     }
 
     @Operation(summary = "Get cart by userId")
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PreAuthorize("#userId==authentication.principal.id and hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/getByUserId/{userId}")
     public ResponseEntity<ApiResponse> getByUserId(@PathVariable String userId) {
         CartDto cartDto = cartService.getByUserId(userId);
@@ -54,7 +54,7 @@ public class CartController {
     }
 
     @Operation(summary = "Get cart by cartId")
-    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @PreAuthorize("@userServiceImpl.isAuthorizedForCart(#cartId,authentication.principal.id) and hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/getByCartId/{cartId}")
     public ResponseEntity<ApiResponse> getByCartId(@PathVariable String cartId) {
         CartDto cartDto = cartService.getByCartId(cartId);

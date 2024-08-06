@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.api.AuthorizationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
 

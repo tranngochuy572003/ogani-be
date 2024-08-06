@@ -1,6 +1,6 @@
 package com.example.ogani.controller;
 
-import com.example.api.AuthorizationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.controller.AuthController;
 import com.example.dto.AuthenticationDto;
 import com.example.dto.RegisterDto;
@@ -49,14 +49,14 @@ public class AuthControllerTest {
         objectMapper = new ObjectMapper();
         authenticationDto = new AuthenticationDto("helo@gmail.com", "abc123");
         registerDto = new RegisterDto("user1@gmail.com", "abc123", "abc123", "name", "address", "0917999213", "ROLE_USER");
-        user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, "token", null, null, null, null);
+        user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, "token", null, null, null);
     }
 
     @Test
     void testLoginWhenAccountValidThenSuccess() throws Exception {
         String token = "token";
         String refreshToken = "refreshToken";
-        User user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null, null);
+        User user = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false, null, null, null, null);
         List<String> roles = Arrays.asList(user.getRole().getValue());
         AuthorizationDto authorizationDto = new AuthorizationDto(token, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
         Mockito.when(authService.login(authenticationDto)).thenReturn(authorizationDto);

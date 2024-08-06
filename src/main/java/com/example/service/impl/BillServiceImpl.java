@@ -1,11 +1,10 @@
 package com.example.service.impl;
 
 import com.example.dto.*;
-import com.example.entity.Bill;
-import com.example.entity.BillDetail;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.exception.BadRequestException;
 import com.example.mapper.BillDetailMapper;
+import com.example.mapper.ProductMapper;
 import com.example.repository.BillRepository;
 import com.example.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.common.MessageConstant.ORDER_CONFIRMED;
 import static com.example.common.MessageConstant.VALUE_NO_EXIST;
 
 @Service
@@ -34,63 +34,104 @@ public class BillServiceImpl implements BillService {
     @Override
     public BillDto getBillById(String billId) {
         Optional<Bill> bill = billRepository.findById(billId);
-        List<BillDetailDto> billDetailDtoList = new ArrayList<>();
-        if(bill.isPresent()){
-            CartDto cartDto = cartService.getByUserId(bill.get().getUsers().getId());
-            List<CartDetailInfoDto> cartDetailInfoDtoList = cartDto.getCartDetail();
-
-            for(CartDetailInfoDto cartDetailInfoDto : cartDetailInfoDtoList){
-                String imageUrl = productService.getProductById(cartDetailInfoDto.getProductId()).getImageList().get(0);
-                BillDetailDto billDetailDto = new BillDetailDto(cartDetailInfoDto.getQuantity(),cartDetailInfoDto.getPrice(),cartDetailInfoDto.getName(),imageUrl);
-                billDetailDtoList.add(billDetailDto);
-                BillDetail billDetail = BillDetailMapper.toEntity(billDetailDto);
-                billDetail.setBills(bill.get());
-                billDetailService.save(billDetail);
+        if (bill.isPresent()) {
+            long totalAmount = 0L;
+            List<BillDetail> billDetails = bill.get().getBillDetailList();
+            for(BillDetail billDetail:billDetails){
+                totalAmount+=billDetail.getPrice()*billDetail.getQuantity();
             }
-            List<BillDetail> billDetails = billDetailService.findByBillsId(billId);
-            Long total = 0L;
+            return new BillDto(billId,bill.get().getUsers().getId(),bill.get().getCreatedDate(),totalAmount,bill.get().isConfirm(),BillDetailMapper.toListDto(billDetails));
 
-            for(BillDetail billDetail :billDetails){
-                total+=billDetail.getPrice();
-            }
-            double totalPrice = total + bill.get().getTax()*total;
-            bill.get().setTotalPrice((long) totalPrice);
-            billRepository.save(bill.get());
-
-            return new BillDto(bill.get().getId(), bill.get().getUsers().getId(), bill.get().getCreatedDate(), cartDto.getTotalPrice(), billDetailDtoList);
         } else {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
     }
     @Override
-    public Bill confirmOrder(OrderDto orderDto , String userId){
+    public void order(String userId) {
+        List<BillDetailDto> billDetailDtoList = new ArrayList<>();
+        User user = userService.findUserById(userId);
+
         Bill bill = new Bill();
-        User user =  userService.findUserById(userId);
-        bill.setTax(orderDto.getTax());
-        bill.setConfirm(orderDto.isConfirm());
         bill.setUsers(user);
         billRepository.save(bill);
-        return bill;
+
+        List<CartDetailInfoDto> cartDetailAddBill = new ArrayList<>();
+        CartDto cartDto = cartService.getByUserId(userId);
+        List<CartDetailInfoDto> cartDetailInfoDtoList = cartDto.getCartDetail();
+
+        for (CartDetailInfoDto cartDetailInfoDto : cartDetailInfoDtoList) {
+            if(cartDetailInfoDto.getIsChosen()){
+                cartDetailAddBill.add(cartDetailInfoDto);
+            }
+        }
+
+        for (CartDetailInfoDto cartDetail : cartDetailAddBill) {
+            String imageUrl = productService.getProductById(cartDetail.getProductId()).getImageList().get(0);
+            BillDetailDto billDetailDto = new BillDetailDto(cartDetail.getQuantity(), cartDetail.getPrice(), cartDetail.getName(), imageUrl);
+            billDetailDtoList.add(billDetailDto);
+            BillDetail billDetail = BillDetailMapper.toEntity(billDetailDto);
+            billDetail.setBills(bill);
+            billDetailService.save(billDetail);
+        }
+
+        Long total = 0L;
+        for (BillDetail billDetail : BillDetailMapper.toListEntity(billDetailDtoList)) {
+            total += billDetail.getPrice();
+        }
+        bill.setTotalPrice(total);
+        billRepository.save(bill);
+
+        Cart cart = cartService.getCartByUserId(bill.getUsers().getId());
+        List<CartDetail> cartDetailList =cart.getCartDetails();
+        cartDetailList.removeIf(CartDetail::isChosen);
+        cartService.save(cart);
+        if(cartDetailList.isEmpty()){
+            cartService.deleteCartById(cart.getId());
+        }
+        cartService.save(cart);
+    }
+
+    @Override
+    public void confirmOrder(String billId) {
+       Optional<Bill> bill = billRepository.findById(billId);
+       if(bill.isPresent()){
+           if(bill.get().isConfirm()){
+               throw new BadRequestException(ORDER_CONFIRMED);
+           }
+           bill.get().setConfirm(true);
+           List<BillDetail> billDetailList =bill.get().getBillDetailList();
+           for(BillDetail billDetail : billDetailList){
+               String nameProduct = billDetail.getNameProduct();
+               Product product = productService.findProductByName(nameProduct);
+               product.setInventory(product.getInventory()-billDetail.getQuantity());
+               productService.save(product);
+           }
+           billRepository.save(bill.get());
+
+       }else {
+           throw new BadRequestException(VALUE_NO_EXIST);
+       }
     }
     @Override
     public List<BillDto> getBillByUserId(String userId) {
-        List<Bill> billList = billRepository.findByUsersId(userId);
+        User user= userService.findUserById(userId);
+        List<Bill> billList = billRepository.findByUsers(user);
         List<BillDto> billDtoList = new ArrayList<>();
-        List<BillDetailDto> billDetailDtoList = new ArrayList<>();
         for (Bill bill : billList) {
-            CartDto cartDto = cartService.getByUserId(bill.getUsers().getId());
-            List<CartDetailInfoDto> cartDetailInfoDtoList = cartDto.getCartDetail();
-            List<BillDetail> billDetails = billDetailService.findByBillsId(bill.getId());
-            for (BillDetail billDetail : billDetails) {
-                BillDetailDto billDetailDto=new BillDetailDto();
-                for (CartDetailInfoDto cartDetailInfoDto : cartDetailInfoDtoList) {
-                    billDetailDto  = new BillDetailDto(cartDetailInfoDto.getQuantity(), billDetail.getPrice(), billDetail.getNameProduct(), billDetail.getUrlImg());
-                }
-                billDetailDtoList.add(billDetailDto);
-            }
-            BillDto billDto = new BillDto(bill.getId(), userId, bill.getCreatedDate(), bill.getTotalPrice(), billDetailDtoList);
+            BillDto billDto = getBillById(bill.getId());
             billDtoList.add(billDto);
         }
         return billDtoList;
+    }
+
+    @Override
+    public boolean isAuthorizedToGetBill(String billId,String userId) {
+        Optional<Bill> bill = billRepository.findById(billId);
+        if(bill.isPresent()){
+            return bill.get().getUsers().getId().equals(userId);
+        }
+        else {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
     }
 }
