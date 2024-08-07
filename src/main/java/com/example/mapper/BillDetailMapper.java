@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BillDetailMapper {
+    private BillDetailMapper() {
+    }
+
     public static BillDetail toEntity(BillDetailDto billDetailDto) {
         BillDetail billDetail = new BillDetail();
         billDetail.setQuantity(billDetailDto.getQuantity());

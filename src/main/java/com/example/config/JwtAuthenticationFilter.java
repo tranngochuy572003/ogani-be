@@ -1,6 +1,7 @@
 package com.example.config;
 
 
+import com.example.common.AppConstant;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -23,7 +24,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.text.ParseException;
 
-import static com.example.config.WebSecurityConfig.WHITE_LIST_URL;
 
 
 @Component
@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenService jwtTokenService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private boolean checkPathValid(String path){
-        for (String pattern : WHITE_LIST_URL) {
+        for (String pattern : AppConstant.WHITE_LIST_URL) {
             if (pathMatcher.match(pattern, path) || path.startsWith(pattern.replace("/**", ""))) {
                 return true;
             }

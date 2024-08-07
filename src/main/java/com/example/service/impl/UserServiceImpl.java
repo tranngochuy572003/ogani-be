@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (AppUtil.containsSpecialCharacters(userDto.getFullName())) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        if (!userDto.getUserName().endsWith("@gmail.com")) {
+        if (!userDto.getUserName().endsWith(FORMAT_EMAIL)) {
             throw new BadRequestException(FIELD_INVALID);
         }
         String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - "@gmail.com".length());
@@ -117,10 +117,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (AppUtil.containsSpecialCharacters(userDto.getFullName())) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        if (!userDto.getUserName().endsWith("@gmail.com")) {
+        if (!userDto.getUserName().endsWith(FORMAT_EMAIL)) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - "@gmail.com".length());
+        String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - FORMAT_EMAIL.length());
         if (!Pattern.matches("^[a-zA-Z0-9]+$", namePart)) {
             throw new BadRequestException(FIELD_INVALID);
         }
