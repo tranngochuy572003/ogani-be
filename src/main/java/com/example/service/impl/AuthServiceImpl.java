@@ -1,7 +1,7 @@
 package com.example.service.impl;
 
-import com.example.dto.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
 import com.example.entity.User;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.common.MessageConstant.*;
 
@@ -70,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
 
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                .toList();
 
         String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
         try {

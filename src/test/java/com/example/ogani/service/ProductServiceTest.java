@@ -1,6 +1,5 @@
 package com.example.ogani.service;
 
-import com.example.dto.ProductDto;
 import com.example.entity.Category;
 import com.example.entity.Product;
 import com.example.exception.NotFoundException;
@@ -22,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 
-public class ProductServiceTest {
+class ProductServiceTest {
     @InjectMocks
     private ProductServiceImpl productService;
     @Mock
@@ -30,13 +29,11 @@ public class ProductServiceTest {
     private Category category;
 
     private Product product;
-    private ProductDto productDto;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
         product = new Product("name", true, 100L, "description", "information", 100L, null, null,null);
-        productDto = new ProductDto("nameProduct", true, 100L, "description", "information", 100L, "category", Arrays.asList("urlImg"));
         category = new Category("name", "type", true, Arrays.asList(product));
         product.setCategory(category);
     }
@@ -47,24 +44,24 @@ public class ProductServiceTest {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             LocalDate createdDate = LocalDate.now();
             appUtilMock.when(() -> AppUtil.checkDateValid(anyString())).thenReturn(createdDate);
-            Mockito.when(productRepository.findByCreatedDateBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(Arrays.asList(product));
+            when(productRepository.findByCreatedDateBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(Arrays.asList(product));
             productService.getProductsByCreatedDate(createdDate);
 
-            verify(productRepository, times(1)).findByCreatedDateBetween(any(LocalDateTime.class),any(LocalDateTime.class));
+            verify(productRepository).findByCreatedDateBetween(any(LocalDateTime.class),any(LocalDateTime.class));
         }
     }
 
 
     @Test
     void testDeleteByIdThenSuccess() {
-        Mockito.when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
+        when(productRepository.findById(anyString())).thenReturn(Optional.of(product));
         productService.deleteById(anyString());
-        verify(productRepository, times(1)).deleteById(anyString());
+        verify(productRepository).deleteById(anyString());
     }
     @Test
     void testDeleteByIdInvalidThenThrowNotFoundException() {
-        Mockito.when(productRepository.findById(anyString())).thenReturn(Optional.empty());
-        NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> productService.deleteById(anyString()));
+        when(productRepository.findById(anyString())).thenReturn(Optional.empty());
+        NotFoundException notFoundException = Assertions.assertThrows(NotFoundException.class, () -> productService.deleteById(null));
         Assertions.assertEquals(VALUE_NO_EXIST, notFoundException.getMessage());
         verify(productRepository, never()).deleteById(anyString());
     }

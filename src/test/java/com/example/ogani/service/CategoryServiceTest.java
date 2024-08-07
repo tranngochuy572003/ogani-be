@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class CategoryServiceTest {
+class CategoryServiceTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
     @Mock
@@ -45,8 +45,8 @@ public class CategoryServiceTest {
     void testGetCategoriesByTypeValidThenSuccess() {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
-            Mockito.when(categoryRepository.findByType("type")).thenReturn(Arrays.asList(category));
-            Mockito.when(categoryService.findByType("type")).thenReturn(Arrays.asList(categoryDto));
+            Mockito.when(categoryRepository.findByType(anyString())).thenReturn(Arrays.asList(category));
+            categoryService.findByType(anyString());
             Assertions.assertEquals(CategoryMapper.toListDto(Arrays.asList(category)), Arrays.asList(categoryDto));
         }
 
@@ -63,8 +63,8 @@ public class CategoryServiceTest {
 
     @Test
     void testGetAllCategoriesThenSuccess() {
-        Mockito.when(categoryRepository.findAll()).thenReturn(Arrays.asList(category));
-        Mockito.when(categoryService.getAllCategories()).thenReturn(Arrays.asList(categoryDto));
+        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category));
+        when(categoryService.getAllCategories()).thenReturn(Arrays.asList(categoryDto));
 
         Assertions.assertEquals(CategoryMapper.toListDto(Arrays.asList(category)), Arrays.asList(categoryDto));
     }
@@ -75,7 +75,7 @@ public class CategoryServiceTest {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
         }
-        Mockito.when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
+        when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
         categoryService.findById("id");
         Assertions.assertEquals(CategoryMapper.toDto(Optional.of(category).get(), newCategoryDto), newCategoryDto);
     }
@@ -83,8 +83,8 @@ public class CategoryServiceTest {
     @Test
     void getCreatedDateThenSuccess() {
         LocalDate localDate = LocalDate.now();
-        Mockito.when(categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay())).thenReturn(Arrays.asList(category));
-        Mockito.when(categoryService.findByCreatedDate(LocalDate.now())).thenReturn(Arrays.asList(categoryDto));
+       when(categoryRepository.findByCreatedDateBetween(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay())).thenReturn(Arrays.asList(category));
+        when(categoryService.findByCreatedDate(LocalDate.now())).thenReturn(Arrays.asList(categoryDto));
         Assertions.assertEquals(CategoryMapper.toListDto(Arrays.asList(category)), Arrays.asList(categoryDto));
     }
 
@@ -93,12 +93,12 @@ public class CategoryServiceTest {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
         }
-        Mockito.when(categoryRepository.findByName("name")).thenReturn(null);
-        Mockito.when(categoryRepository.save(CategoryMapper.toCreateEntity(categoryDto))).thenReturn(category);
+        when(categoryRepository.findByName("name")).thenReturn(null);
+        when(categoryRepository.save(CategoryMapper.toCreateEntity(categoryDto))).thenReturn(category);
         categoryService.addCategory(categoryDto);
 
-        verify(categoryRepository, times(1)).findByName("name");
-        verify(categoryRepository, times(1)).save(CategoryMapper.toCreateEntity(categoryDto));
+        verify(categoryRepository).findByName("name");
+        verify(categoryRepository).save(CategoryMapper.toCreateEntity(categoryDto));
 
     }
 
@@ -109,7 +109,7 @@ public class CategoryServiceTest {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(true);
         }
         BadRequestException badRequestException = Assertions.assertThrows(BadRequestException.class, () -> categoryService.addCategory(categoryDto));
-        Assertions.assertEquals("Name is invalid", badRequestException.getMessage());
+        Assertions.assertEquals(FIELD_INVALID, badRequestException.getMessage());
         verify(categoryRepository, never()).findByName(anyString());
     }
 
@@ -118,7 +118,7 @@ public class CategoryServiceTest {
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
         }
-        Mockito.when(categoryRepository.findByName("name")).thenReturn(category);
+        when(categoryRepository.findByName("name")).thenReturn(category);
 
         BadRequestException badRequestException = Assertions.assertThrows(BadRequestException.class, () -> categoryService.addCategory(categoryDto));
         Assertions.assertEquals(VALUE_EXISTED, badRequestException.getMessage());
@@ -128,36 +128,36 @@ public class CategoryServiceTest {
 
     @Test
     void testUpdateCategoryThenSuccess() {
-        Mockito.when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
+       when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
         try (MockedStatic<AppUtil> appUtilMock = mockStatic(AppUtil.class)) {
             appUtilMock.when(() -> AppUtil.containsSpecialCharacters(anyString())).thenReturn(false);
         }
-        Mockito.when(categoryRepository.findByName(categoryDto.getName())).thenReturn(null);
-        Mockito.when(categoryRepository.save(category)).thenReturn(category);
+        when(categoryRepository.findByName(categoryDto.getName())).thenReturn(null);
+        when(categoryRepository.save(category)).thenReturn(category);
         categoryService.updateCategory("id", categoryDto);
         Assertions.assertEquals(category, CategoryMapper.toUpdateEntity(category, categoryDto));
 
-        verify(categoryRepository, times(1)).findById(any(String.class));
-        verify(categoryRepository, times(1)).findByName(any(String.class));
-        verify(categoryRepository, times(1)).save(any(Category.class));
+        verify(categoryRepository).findById(any(String.class));
+        verify(categoryRepository).findByName(any(String.class));
+        verify(categoryRepository).save(any(Category.class));
     }
 
 
     @Test
     void getCategoriesActiveThenSuccess(){
-        Mockito.when(categoryRepository.findCategoriesByActive()).thenReturn(Arrays.asList(category));
-        Mockito.when(categoryService.getCategoriesActive()).thenReturn(Arrays.asList(categoryDto));
+        when(categoryRepository.findCategoriesByActive()).thenReturn(Arrays.asList(category));
+        when(categoryService.getCategoriesActive()).thenReturn(Arrays.asList(categoryDto));
 
         Assertions.assertEquals(Arrays.asList(categoryDto), CategoryMapper.toListDto(Arrays.asList(category)));
     }
 
     @Test
     void deleteCategoryThenSuccess(){
-        Mockito.when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
+        when(categoryRepository.findById("id")).thenReturn(Optional.of(category));
         doNothing().when(categoryRepository).deleteById("id");
         categoryService.deleteCategory("id");
 
-        verify(categoryRepository, times(1)).findById(any(String.class));
-        verify(categoryRepository, times(1)).deleteById(any(String.class));
+        verify(categoryRepository).findById(any(String.class));
+        verify(categoryRepository).deleteById(any(String.class));
     }
 }

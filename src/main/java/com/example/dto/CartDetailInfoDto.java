@@ -12,9 +12,9 @@ public class CartDetailInfoDto {
     private List<String> imageURL;
     private Long quantity;
     private Long price;
-    private Boolean isChosen;
+    private boolean isChosen;
 
-    public CartDetailInfoDto(String productId, String name, List<String> imageURL, Long quantity, Long price, Boolean isChosen) {
+    public CartDetailInfoDto(String productId, String name, List<String> imageURL, Long quantity, Long price, boolean isChosen) {
         this.productId = productId;
         this.name = name;
         this.imageURL = imageURL;

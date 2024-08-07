@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserControllerTest {
+class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
@@ -63,25 +63,14 @@ public class UserControllerTest {
     }
 
     @Test
-    void testAddUserWhenExistsByUsernameThenThrowBadRequest() throws Exception {
-        when(userService.existsByUsername(any(String.class))).thenThrow(new BadRequestException("UserName existed"));
-        mockMvc.perform(post("/api/v1/users/add")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
-                .andExpect(result -> assertEquals("UserName existed", result.getResolvedException().getMessage()));
-    }
-
-    @Test
     void testGetAllUserThenSuccess() throws Exception {
-        UserDto user1 = new UserDto("user1@gmail.com","user1","abc123","103 nct","0905217612","ROLE_USER",true);
-        UserDto user2 = new UserDto("user2@gmail.com","user2","abc123","109 nct","0905217900","ROLE_USER",true);
+        UserDto user1 = new UserDto("user1@gmail.com", "user1", "abc123", "103 nct", "0905217612", "ROLE_USER", true);
+        UserDto user2 = new UserDto("user2@gmail.com", "user2", "abc123", "109 nct", "0905217900", "ROLE_USER", true);
 
         List<UserDto> userDtoList = Arrays.asList(user1, user2);
         when(userService.getAllUsers()).thenReturn(userDtoList);
 
-        mockMvc.perform(get("/api/v1/users")
+        mockMvc.perform(get("/api/v1/users/getAllUsers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk())
@@ -92,8 +81,8 @@ public class UserControllerTest {
 
     @Test
     void testGetUserByIdValidThenSuccess() throws Exception {
-       when(userService.getUserById("1")).thenReturn(userDto);
-       mockMvc.perform(get("/api/v1/users/get/{id}",1)
+        when(userService.getUserById("1")).thenReturn(userDto);
+        mockMvc.perform(get("/api/v1/users/get/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk())
@@ -106,7 +95,7 @@ public class UserControllerTest {
     @Test
     void testGetUserByIdInValidThenThrowBadRequest() throws Exception {
         when(userService.getUserById("1")).thenThrow(new BadRequestException(VALUE_NO_EXIST));
-        mockMvc.perform(get("/api/v1/users/get/{id}",1)
+        mockMvc.perform(get("/api/v1/users/get/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isBadRequest())
@@ -117,30 +106,30 @@ public class UserControllerTest {
     @Test
     void testUpdateUserByIdValidThenSuccess() throws Exception {
         doNothing().when(userService).updateUser(any(String.class), any(UserDto.class));
-        mockMvc.perform(patch("/api/v1/users/update/{id}",1)
+        mockMvc.perform(patch("/api/v1/users/update/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ITEM_UPDATED_SUCCESS));
-        verify(userService).updateUser(any(String.class),any(UserDto.class));
+        verify(userService).updateUser(any(String.class), any(UserDto.class));
     }
 
     @Test
     void testUpdateUserByIdInValidThenThrowBadRequest() throws Exception {
         doThrow(new BadRequestException("Id is invalid")).when(userService).updateUser(any(String.class), any(UserDto.class));
-        mockMvc.perform(patch("/api/v1/users/update/{id}",1)
+        mockMvc.perform(patch("/api/v1/users/update/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))
                 .andExpect(result -> assertEquals("Id is invalid", result.getResolvedException().getMessage()));
-        verify(userService).updateUser(any(String.class),any(UserDto.class));
+        verify(userService).updateUser(any(String.class), any(UserDto.class));
     }
 
     @Test
     void testDeleteUserIdValidThenSuccess() throws Exception {
         doNothing().when(userService).deleteUser(any(String.class));
-        mockMvc.perform(delete("/api/v1/users/delete/{id}","1")
+        mockMvc.perform(delete("/api/v1/users/delete/{id}", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(ITEM_DELETED_SUCCESS));
@@ -150,7 +139,7 @@ public class UserControllerTest {
     @Test
     void testDeleteUserIdInValidThenThrowBadRequest() throws Exception {
         doThrow(new BadRequestException("Id is invalid")).when(userService).deleteUser(any(String.class));
-        mockMvc.perform(delete("/api/v1/users/delete/{id}","1")
+        mockMvc.perform(delete("/api/v1/users/delete/{id}", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestException))

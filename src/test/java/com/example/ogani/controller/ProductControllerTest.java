@@ -2,7 +2,6 @@ package com.example.ogani.controller;
 
 import com.example.controller.ProductController;
 import com.example.dto.ProductDto;
-import com.example.entity.Category;
 import com.example.service.impl.ProductServiceImpl;
 import com.example.util.AppUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ProductControllerTest {
+class ProductControllerTest {
     @InjectMocks
     private ProductController productController;
     @Mock
@@ -35,7 +34,6 @@ public class ProductControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    private Category category;
     private ProductDto productDto;
 
 
@@ -57,7 +55,7 @@ public class ProductControllerTest {
         );
 
 
-        MockMultipartFile productDto = new MockMultipartFile(
+        MockMultipartFile addProductDto = new MockMultipartFile(
                 "productDto",
                 "",
                 "application/json",
@@ -65,7 +63,7 @@ public class ProductControllerTest {
         );
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/products/add")
-                        .file(productDto)
+                        .file(addProductDto)
                         .file(image)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
@@ -93,7 +91,7 @@ public class ProductControllerTest {
         );
 
 
-        MockMultipartFile productDto = new MockMultipartFile(
+        MockMultipartFile updateProductDto = new MockMultipartFile(
                 "productDto",
                 "",
                 "application/json",
@@ -107,7 +105,7 @@ public class ProductControllerTest {
             return request;
         });
         mockMvc.perform(builder
-                        .file(productDto)
+                        .file(updateProductDto)
                         .file(image)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andDo(print())

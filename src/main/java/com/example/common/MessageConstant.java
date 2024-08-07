@@ -3,6 +3,8 @@ package com.example.common;
 public class MessageConstant {
   public static final String EMAIL_PASSWORD_INVALID="Invalid email or password";
   public static final String FIELD_INVALID="Field is invalid";
+  public static final String FORMAT_EMAIL="@gmail.com";
+
   public static final String TOKEN_INVALID="Token is invalid";
   public static final String FIELD_REQUIRED="Field required is not blank.";
 

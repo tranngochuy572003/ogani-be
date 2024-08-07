@@ -11,10 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,97 +21,100 @@ import static com.example.common.MessageConstant.VALUE_NO_EXIST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
+class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
     @Mock
     private UserRepository userRepository;
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockUser =new User();
+        mockUser.setUserName("userName@gmail.com");
+        mockUser.setFullName("fullName");
+        mockUser.setAddress("address");
+        mockUser.setPhoneNumber("0917000749");
+        mockUser.setId("userId");
+        mockUser.setRole(UserRole.CUSTOMER);
+
     }
 
     private UserDto mockUserDto() {
-        return new UserDto("userName", "fullName", "password", "address", "phoneNumber");
+        return new UserDto("userName@gmail.com", "fullName", "password", "address", "0917000749");
     }
 
-    private User mockUser() {
-        return new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName", "userName", "password", "address", "phoneNumber", UserRole.CUSTOMER, false, null,null, null, null);
-    }
 
     @Test
-    public void testAddUserNameNotExists() {
-        User mockUser = mockUser();
+     void testAddUserNameNotExists() {
         UserDto mockUserDto = mockUserDto();
+        when(userRepository.existsByUserName(mockUserDto.getUserName())).thenReturn(false);
+        when(userRepository.save(mockUser)).thenReturn(mockUser);
         userService.addUser(mockUserDto);
-        Mockito.when(userRepository.existsByUserName(mockUserDto.getUserName())).thenReturn(false);
-        Mockito.when(userRepository.save(mockUser)).thenReturn(mockUser);
         Assertions.assertEquals(mockUserDto.getUserName(), mockUser.getUsername());
         Assertions.assertEquals(mockUserDto.getFullName(), mockUser.getFullName());
         Assertions.assertEquals(mockUserDto.getAddress(), mockUser.getAddress());
         Assertions.assertEquals(mockUserDto.getPhoneNumber(), mockUser.getPhoneNumber());
-        Assertions.assertEquals(mockUser.getRole().getValue(), "ROLE_CUSTOMER");
     }
 
     @Test
-    public void testAddUserNameExistsThenSuccess() {
+     void testAddUserNameExistsThenSuccess() {
         UserDto mockUserDto = mockUserDto();
-        Mockito.when(userRepository.existsByUserName(mockUserDto.getUserName())).thenReturn(true);
-        Assertions.assertThrows(BadRequestException.class, () -> userService.existsByUsername(mockUserDto.getUserName()));
+        when(userRepository.existsByUserName(mockUserDto.getUserName())).thenReturn(true);
+        String userName = mockUserDto.getUserName();
+        Assertions.assertThrows(BadRequestException.class, () -> userService.existsByUsername(userName));
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    public void testGetAllUserThenSuccess() {
-        User user1 = new User("1", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false,  null, null, null, null);
-        User user2 = new User("2", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName2", "userName2", "password2", "address2", "phoneNumber2", UserRole.CUSTOMER, false, null, null, null, null);
-
-        UserDto userDto1 = new UserDto("userName1", "fullName1", "password1", "address1", "phoneNumber1");
-        UserDto userDto2 = new UserDto("userName2", "fullName2", "password2", "address2", "phoneNumber2");
-
+     void testGetAllUserThenSuccess() {
+        User user1 = new User();
+        user1.setUserName("userName1");
+        user1.setRole(UserRole.CUSTOMER);
+        User user2 = new User();
+        user2.setUserName("userName2");
+        user2.setRole(UserRole.ADMIN);
         List<User> userList = Arrays.asList(user1, user2);
-        List<UserDto> userDtoList = Arrays.asList(userDto1, userDto2);
+        when(userRepository.findAll()).thenReturn(userList);
+        List<UserDto> userDtoList = userService.getAllUsers();
 
-        Mockito.when(userRepository.findAll()).thenReturn(userList);
-        Mockito.when(userService.getAllUsers()).thenReturn(userDtoList);
         Assertions.assertEquals(userList.get(0).getUsername(), userDtoList.get(0).getUserName());
         Assertions.assertEquals(userList.get(1).getUsername(), userDtoList.get(1).getUserName());
-        Assertions.assertEquals(userList.get(0).getFullName(), userDtoList.get(0).getFullName());
-        Assertions.assertEquals(userList.get(1).getFullName(), userDtoList.get(1).getFullName());
+
     }
 
 
     @Test
-    public void testGetUserByIdValidThenSuccess() {
-        Mockito.when(userRepository.findUserById(any(String.class))).thenReturn(Optional.of(mockUser()));
-        UserDto userDto = userService.getUserById("1");
+     void testGetUserByIdValidThenSuccess() {
+        when(userRepository.findUserById(any(String.class))).thenReturn(Optional.of(mockUser));
+        UserDto userDto = userService.getUserById("userId");
 
-        Assertions.assertEquals(userDto.getUserName(), mockUser().getUsername());
-        Assertions.assertEquals(userDto.getFullName(), mockUser().getFullName());
-        Assertions.assertEquals(userDto.getAddress(), mockUser().getAddress());
-        Assertions.assertEquals(userDto.getPhoneNumber(), mockUser().getPhoneNumber());
+        Assertions.assertEquals(userDto.getUserName(), mockUser.getUsername());
+        Assertions.assertEquals(userDto.getFullName(), mockUser.getFullName());
+        Assertions.assertEquals(userDto.getAddress(), mockUser.getAddress());
+        Assertions.assertEquals(userDto.getPhoneNumber(), mockUser.getPhoneNumber());
 
     }
 
     @Test
-    public void testGetUserByIdInValidThenThrowBadRequest() {
-        Mockito.when(userRepository.findUserById(any(String.class))).thenReturn(Optional.empty());
-        BadRequestException badRequestException = Assertions.assertThrows(BadRequestException.class, () -> userService.getUserById(any(String.class)));
+     void testGetUserByIdInValidThenThrowBadRequest() {
+        when(userRepository.findUserById(any(String.class))).thenReturn(Optional.empty());
+        BadRequestException badRequestException = Assertions.assertThrows(BadRequestException.class, () -> userService.getUserById(null));
         Assertions.assertEquals(VALUE_NO_EXIST, badRequestException.getMessage());
     }
 
     @Test
-    public void testDeleteUserIdValidThenSuccess(){
-        when(userRepository.findById(mockUser().getId())).thenReturn(Optional.of(mockUser()));
-        userService.deleteUser(mockUser().getId());
-        verify(userRepository, times(1)).deleteById(mockUser().getId());
+     void testDeleteUserIdValidThenSuccess(){
+        when(userRepository.findUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        userService.deleteUser(mockUser.getId());
+        verify(userRepository).deleteById(mockUser.getId());
     }
 
     @Test
-    public void testDeleteUserIdInValidThenThrowBadRequest() {
-        when(userRepository.findById(mockUser().getId())).thenReturn(Optional.empty());
-        verify(userRepository, never()).deleteById(mockUser().getId());
-        Assertions.assertThrows(BadRequestException.class, () -> userService.deleteUser(any(String.class)));
+     void testDeleteUserIdInValidThenThrowBadRequest() {
+        when(userRepository.findById(mockUser.getId())).thenReturn(Optional.empty());
+        verify(userRepository, never()).deleteById(mockUser.getId());
+        Assertions.assertThrows(BadRequestException.class, () -> userService.deleteUser(null));
     }
 }

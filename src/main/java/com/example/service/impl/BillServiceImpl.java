@@ -1,10 +1,12 @@
 package com.example.service.impl;
 
-import com.example.dto.*;
+import com.example.dto.BillDetailDto;
+import com.example.dto.BillDto;
+import com.example.dto.CartDetailInfoDto;
+import com.example.dto.CartDto;
 import com.example.entity.*;
 import com.example.exception.BadRequestException;
 import com.example.mapper.BillDetailMapper;
-import com.example.mapper.ProductMapper;
 import com.example.repository.BillRepository;
 import com.example.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +62,7 @@ public class BillServiceImpl implements BillService {
         List<CartDetailInfoDto> cartDetailInfoDtoList = cartDto.getCartDetail();
 
         for (CartDetailInfoDto cartDetailInfoDto : cartDetailInfoDtoList) {
-            if(cartDetailInfoDto.getIsChosen()){
+            if(cartDetailInfoDto.isChosen()){
                 cartDetailAddBill.add(cartDetailInfoDto);
             }
         }
