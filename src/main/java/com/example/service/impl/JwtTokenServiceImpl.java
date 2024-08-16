@@ -3,7 +3,6 @@ package com.example.service.impl;
 import com.example.entity.User;
 import com.example.exception.BadRequestException;
 import com.example.exception.ForbiddenException;
-import com.example.repository.UserRepository;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
 import com.nimbusds.jose.shaded.json.JSONObject;
@@ -12,6 +11,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,6 @@ import java.text.ParseException;
 import java.time.*;
 import java.util.Base64;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.example.common.AppConstant.JWT_HEADER;
 import static com.example.common.MessageConstant.*;
@@ -40,7 +38,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
 
     @Autowired
-    public JwtTokenServiceImpl(UserRepository userRepository, UserService userService) {
+    public JwtTokenServiceImpl(UserService userService) {
         this.userService = userService;
     }
 
@@ -54,23 +52,23 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         payload.put("role", user.getRole().getValue());
         payload.put("exp", epochSeconds);
         payload.put("jwtId", UUID.randomUUID().toString());
-        String signature = hmacSha256(encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()), System.getenv("SECRET_KEY"));
+        String secretKey = System.getenv("SECRET_KEY");
+        String signature = hmacSha256(encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()), secretKey);
         return encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()) + "." + signature;
     }
 
     public String extractUserNameFromJWT(String token) {
+        String username = StringUtils.EMPTY;
         try {
             if (verifyExpiration(token)) {
                 JWT jwt = JWTParser.parse(token);
                 JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-                return (String) claimsSet.getClaim("userName");
-            }
-            else {
-                throw new BadRequestException(TOKEN_INVALID);
+                username = (String) claimsSet.getClaim("userName");
             }
         } catch (ParseException e) {
             throw new BadRequestException(TOKEN_INVALID);
         }
+        return username;
     }
 
     public String createRefreshToken(String token) {
@@ -115,7 +113,6 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             byte[] signedBytes = sha256Hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return encode(signedBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
-            log.error(ex.getMessage());
             return null;
         }
     }

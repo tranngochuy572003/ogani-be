@@ -10,7 +10,6 @@ import java.util.List;
 public interface CartDetailService {
     void deleteAllByCarts(Cart cart);
     List<CartDetail> findByCarts(Cart cart);
-    CartDetail findByProducts(Product product);
     void save(CartDetail cartDetail);
     void deleteCartDetailByProductId(String productId);
 }

@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User,String> {
   @Query("SELECT us from users  us WHERE us.id=?1 ")
   public Optional<User> findUserById(String id);
 
-  boolean existsByUserName(String username);
   User findUserByRefreshToken(String refreshToken);
 
   User findByCartId(String cartId);

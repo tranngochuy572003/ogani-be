@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ImageServiceImpl implements ImageService {
     @Autowired
-    private  ImageRepository imageRepository;
+    private ImageRepository imageRepository;
+
     @Override
     public void deleteByUrlImg(String url) {
         imageRepository.deleteByUrlImg(url);

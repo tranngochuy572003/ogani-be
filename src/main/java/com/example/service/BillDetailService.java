@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface BillDetailService {
     void save(BillDetail billDetail);
-    List<BillDetail> findByBillsId(String billId);
 }

@@ -4,14 +4,6 @@ import com.example.dto.CartDetailDto;
 import com.example.entity.CartDetail;
 
 public class CartDetailMapper {
-  public static CartDetailDto toDto(CartDetail cartDetail) {
-    CartDetailDto cartDetailDto = new CartDetailDto();
-    cartDetailDto.setChosen(cartDetail.isChosen());
-    cartDetailDto.setQuantityProduct(cartDetail.getQuantityProduct());
-
-    return cartDetailDto;
-  }
-
   public static CartDetail toEntity(CartDetailDto cartDetailDto) {
     CartDetail cartDetail = new CartDetail();
     cartDetail.setChosen(cartDetailDto.isChosen());

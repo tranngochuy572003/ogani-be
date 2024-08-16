@@ -12,8 +12,8 @@ public class ProductMapper {
     ProductDto productDto = new ProductDto();
     productDto.setActive(product.isActive());
     productDto.setNameProduct(product.getNameProduct());
-    productDto.setInventory(product.getInventory());
-    productDto.setPrice(product.getPrice());
+    productDto.setInventory(String.valueOf(product.getInventory()));
+    productDto.setPrice(String.valueOf(product.getPrice()));
     productDto.setDescription(product.getDescription());
     productDto.setInformation(product.getInformation());
 
@@ -32,8 +32,8 @@ public class ProductMapper {
     Product product = new Product();
     product.setActive(productDto.isActive());
     product.setNameProduct(productDto.getNameProduct());
-    product.setInventory(productDto.getInventory());
-    product.setPrice(productDto.getPrice());
+    product.setInventory(Long.valueOf(productDto.getInventory()));
+    product.setPrice(Long.valueOf(productDto.getPrice()));
     product.setDescription(productDto.getDescription());
     product.setInformation(productDto.getInformation());
 
@@ -43,8 +43,8 @@ public class ProductMapper {
   public static Product toUpdateEntity(Product product , ProductDto productDto) {
     product.setActive(productDto.isActive());
     product.setNameProduct(productDto.getNameProduct());
-    product.setInventory(productDto.getInventory());
-    product.setPrice(productDto.getPrice());
+    product.setInventory(Long.valueOf(productDto.getInventory()));
+    product.setPrice(Long.valueOf(productDto.getPrice()));
     product.setDescription(productDto.getDescription());
     product.setInformation(productDto.getInformation());
 

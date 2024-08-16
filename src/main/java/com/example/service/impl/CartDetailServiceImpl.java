@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class CartDetailServiceImpl implements CartDetailService{
     @Autowired
@@ -21,10 +22,7 @@ public class CartDetailServiceImpl implements CartDetailService{
     public List<CartDetail> findByCarts(Cart cart) {
        return cartDetailRepository.findByCarts(cart);
     }
-    @Override
-    public CartDetail findByProducts(Product product) {
-        return cartDetailRepository.findByProducts(product);
-    }
+
     @Override
     public void save(CartDetail cartDetail) {
         cartDetailRepository.save(cartDetail);
