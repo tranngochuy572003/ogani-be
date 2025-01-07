@@ -72,20 +72,20 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     public String createRefreshToken(String token) {
+        String userName;
+        if (!verifyExpiration(token)) {
+            throw new ForbiddenException(REFRESH_TOKEN_EXPIRED);
+        }
         try {
-            if (verifyExpiration(token)) {
-                JWT jwt = JWTParser.parse(token);
-                JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-                String userName = (String) claimsSet.getClaim("userName");
-                return refreshToken(userName);
-            } else {
-                throw new ForbiddenException(REFRESH_TOKEN_EXPIRED);
-
-            }
+            JWT jwt = JWTParser.parse(token);
+            JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
+            userName = (String) claimsSet.getClaim("userName");
         } catch (ParseException e) {
             throw new BadRequestException(FIELD_INVALID);
         }
+        return refreshToken(userName);
     }
+
 
     public boolean verifyExpiration(String authToken) {
         try {
@@ -94,7 +94,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             Instant expiryTime = claimsSet.getExpirationTime().toInstant();
             Instant nowVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant();
             return expiryTime.isAfter(nowVietnam);
-        }catch (ParseException e){
+        } catch (ParseException e) {
             throw new BadRequestException(TOKEN_INVALID);
         }
 
@@ -132,6 +132,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         String secret = "secret";
 
         String signature = hmacSha256(encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()), secret);
+
         return encode(JWT_HEADER.getBytes()) + "." + encode(payload.toJSONString().getBytes()) + "." + signature;
     }
 

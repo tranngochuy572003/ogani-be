@@ -8,16 +8,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,String> {
-  @Query("SELECT us FROM users  us WHERE us.userName = ?1 ")
-  public User findUserByEmail(String email);
+public interface UserRepository extends JpaRepository<User, String> {
+    @Query("SELECT us FROM users us WHERE us.userName = ?1 ")
+    User findUserByEmail(String email);
 
-  @Query("SELECT us from users  us WHERE us.id=?1 ")
-  public Optional<User> findUserById(String id);
+    @Query("SELECT us from users  us WHERE us.id=?1 ")
+    Optional<User> findUserById(String id);
 
-  User findUserByRefreshToken(String refreshToken);
+    User findUserByRefreshToken(String refreshToken);
 
-  User findByCartId(String cartId);
+    User findByCartId(String cartId);
 
 
 }
