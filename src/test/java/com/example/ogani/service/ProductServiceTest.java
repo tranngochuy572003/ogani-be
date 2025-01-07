@@ -20,10 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -173,6 +170,9 @@ class ProductServiceTest {
         Assertions.assertThrows(BadRequestException.class, () -> productService.addProduct(productDto, multipartFiles));
     }
 
+    @Captor
+    ArgumentCaptor<Product> productDtoArgumentCaptor;
+
 
     @Test
     void testUpdateProductThenSuccess() {
@@ -180,6 +180,8 @@ class ProductServiceTest {
         when(categoryService.findCategoryByName(anyString())).thenReturn(category);
         when(productRepository.findProductByNameProduct(anyString())).thenReturn(null);
         productService.updateProduct(anyString(), productDto, multipartFiles);
+        verify(productRepository).save(productDtoArgumentCaptor.capture());
+        Assertions.assertEquals(productDtoArgumentCaptor.getValue().getCategory(), category);
     }
 
     @Test

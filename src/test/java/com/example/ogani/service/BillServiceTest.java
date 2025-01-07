@@ -13,9 +13,7 @@ import com.example.service.impl.BillServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +22,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 class BillServiceTest {
     @InjectMocks
@@ -147,6 +146,9 @@ class BillServiceTest {
         Assertions.assertTrue(billService.isAuthorizedToGetBill("id", "userId"));
     }
 
+    @Captor
+    ArgumentCaptor<Bill> billCaptor;
+
     @Test
     void testOrderThenSuccess() {
         when(userService.findUserById("userId")).thenReturn(user);
@@ -154,8 +156,10 @@ class BillServiceTest {
         when(productService.getProductById(product.getId())).thenReturn(productDto);
         when(cartService.getCartByUserId(bill.getUsers().getId())).thenReturn(cart);
         billService.order("userId");
-        verify(cartService,times(2)).save(any(Cart.class));
-        verify(billRepository,times(2)).save(any(Bill.class));
+
+        verify(billRepository,times(2)).save(billCaptor.capture());
+        Bill value = billCaptor.getValue();
+        assertEquals("....","userId" ,value.getUsers().getId());
     }
 
 }

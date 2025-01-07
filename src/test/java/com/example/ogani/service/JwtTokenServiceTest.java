@@ -13,10 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -34,8 +31,10 @@ class JwtTokenServiceTest {
     @SystemStub
     private EnvironmentVariables variables =
             new EnvironmentVariables("SECRET_KEY", "secret");
+    @Spy
     @InjectMocks
     JwtTokenServiceImpl jwtTokenService;
+
     @Mock
     private UserService userService;
 
@@ -44,7 +43,8 @@ class JwtTokenServiceTest {
     private JWT jwtMock;
     @Mock
     private JWTClaimsSet claimsSetMock;
-
+    @Captor
+    ArgumentCaptor<String> userNameCaptor;
 
     @BeforeEach
     void setUp() {
@@ -72,17 +72,25 @@ class JwtTokenServiceTest {
 
         jwtTokenService.createToken(user.getUsername());
 
+        verify(userService).findUserByEmail(userNameCaptor.capture());
+        Assertions.assertEquals("userName@gmail.com", userNameCaptor.getValue());
     }
+
 
     @Test
     void testRefreshTokenThenSuccess() {
         when(userService.findUserByEmail(user.getUsername())).thenReturn(user);
         jwtTokenService.refreshToken(user.getUsername());
+        verify(userService).findUserByEmail(userNameCaptor.capture());
+        Assertions.assertEquals(user.getUsername(), userNameCaptor.getValue());
     }
+
+
 
     @Test
     void testCreateRefreshTokenThenSuccess() {
         when(userService.findUserByEmail(user.getUsername())).thenReturn(user);
+
         ZoneId vietnamZoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         LocalDateTime nowInVietnam = LocalDateTime.now(vietnamZoneId).plusHours(24);
         long expectedEpochSeconds = nowInVietnam.toEpochSecond(ZoneOffset.ofHours(7));
@@ -95,7 +103,10 @@ class JwtTokenServiceTest {
         String token = jwtTokenService.createToken(user.getUsername());
         jwtTokenService.createRefreshToken(token);
 
+        verify(jwtTokenService).refreshToken(userNameCaptor.capture());
+        Assertions.assertEquals("userName@gmail.com", userNameCaptor.getValue());
     }
+
     @Test
     void testCreateRefreshTokenThenThrowBadRequest() throws ParseException {
         when(userService.findUserByEmail(user.getUsername())).thenReturn(user);
@@ -137,7 +148,7 @@ class JwtTokenServiceTest {
         payload.put("exp", expectedEpochSeconds);
 
         String token = jwtTokenService.createToken(user.getUsername());
-        boolean isValid =jwtTokenService.isValidToken(token,user);
+        boolean isValid = jwtTokenService.isValidToken(token, user);
         Assertions.assertTrue(isValid);
 
     }

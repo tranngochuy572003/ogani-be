@@ -14,9 +14,7 @@ import com.example.service.impl.CartServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,6 +112,9 @@ class CartServiceTest {
         verify(cartDetailService).deleteAllByCarts(cart);
     }
 
+
+    @Captor
+    ArgumentCaptor<CartDetail> cartDetailCaptor ;
 
     @Test
     void testUpdateCartThenSuccess() {
