@@ -2,7 +2,6 @@ package com.example.ogani.controller;
 
 import com.example.controller.ProductController;
 import com.example.dto.ProductDto;
-import com.example.entity.Category;
 import com.example.service.impl.ProductServiceImpl;
 import com.example.util.AppUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.example.common.MessageConstant.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ProductControllerTest {
+class ProductControllerTest {
     @InjectMocks
     private ProductController productController;
     @Mock
@@ -35,7 +35,6 @@ public class ProductControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    private Category category;
     private ProductDto productDto;
 
 
@@ -44,7 +43,7 @@ public class ProductControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
         objectMapper = new ObjectMapper();
-        productDto = new ProductDto("nameProduct", true, 100L, "description", "information", 100L, "category", Arrays.asList("urlImg"));
+        productDto = new ProductDto("nameProduct", true, "100L", "description", "information", "100L", "category", Arrays.asList("urlImg"));
     }
 
     @Test
@@ -57,7 +56,7 @@ public class ProductControllerTest {
         );
 
 
-        MockMultipartFile productDto = new MockMultipartFile(
+        MockMultipartFile addProductDto = new MockMultipartFile(
                 "productDto",
                 "",
                 "application/json",
@@ -65,7 +64,7 @@ public class ProductControllerTest {
         );
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/products/add")
-                        .file(productDto)
+                        .file(addProductDto)
                         .file(image)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
@@ -93,7 +92,7 @@ public class ProductControllerTest {
         );
 
 
-        MockMultipartFile productDto = new MockMultipartFile(
+        MockMultipartFile updateProductDto = new MockMultipartFile(
                 "productDto",
                 "",
                 "application/json",
@@ -107,7 +106,7 @@ public class ProductControllerTest {
             return request;
         });
         mockMvc.perform(builder
-                        .file(productDto)
+                        .file(updateProductDto)
                         .file(image)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andDo(print())
@@ -148,16 +147,27 @@ public class ProductControllerTest {
     }
 
 
-
-
-        @Test
-        void testDeleteByIdThenSuccess () throws Exception {
-            mockMvc.perform(delete("/api/v1/products/deleteById/{id}", "id")
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.message").value(ITEM_DELETED_SUCCESS));
-
-        }
-
+    @Test
+    void testDeleteByIdThenSuccess() throws Exception {
+        mockMvc.perform(delete("/api/v1/products/deleteById/{id}", "id")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(ITEM_DELETED_SUCCESS));
 
     }
+
+    @Test
+    void testGetProductByPriceThenSuccess() throws Exception {
+        String productDtoJson = objectMapper.writeValueAsString(List.of(productDto));
+        String expectedJson = "{ \"message\": \"Successfully\", \"data\": " + productDtoJson + " }";
+
+        Mockito.when(productService.getProductByPrice("101")).thenReturn(List.of(productDto));
+
+        mockMvc.perform(get("/api/v1/products/getProductByPrice/{price}", 101)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().json(expectedJson));
+    }
+}
+

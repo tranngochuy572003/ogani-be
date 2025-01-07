@@ -16,10 +16,10 @@ public class ProductDto {
   private String nameProduct ;
   @JsonProperty(value = "isActive")
   private boolean isActive;
-  private Long  inventory;
+  private String  inventory;
   private String  description;
   private String  information;
-  private Long price ;
+  private String price ;
   private String category;
   private List<String> imageList;
 

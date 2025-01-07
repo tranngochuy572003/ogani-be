@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (AppUtil.containsSpecialCharacters(userDto.getFullName())) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        if (!userDto.getUserName().endsWith("@gmail.com")) {
+        if (!userDto.getUserName().endsWith(FORMAT_EMAIL)) {
             throw new BadRequestException(FIELD_INVALID);
         }
         String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - "@gmail.com".length());
@@ -88,11 +88,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User findUserById(String id) {
         Optional<User> user = userRepository.findUserById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
+        if (user.isEmpty()) {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
+        return user.get();
     }
 
 
@@ -108,6 +107,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void updateUser(String id, UserDto userDto) {
+        Optional<User> optionalUser = userRepository.findUserById(id);
+        if (optionalUser.isEmpty()) {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
+        User user = optionalUser.get();
         if (userDto.getUserName().isEmpty()
                 || userDto.getPassword().isEmpty()
                 || userDto.getFullName().isEmpty()
@@ -117,10 +121,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (AppUtil.containsSpecialCharacters(userDto.getFullName())) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        if (!userDto.getUserName().endsWith("@gmail.com")) {
+        if (!userDto.getUserName().endsWith(FORMAT_EMAIL)) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - "@gmail.com".length());
+        String namePart = userDto.getUserName().substring(0, userDto.getUserName().length() - FORMAT_EMAIL.length());
         if (!Pattern.matches("^[a-zA-Z0-9]+$", namePart)) {
             throw new BadRequestException(FIELD_INVALID);
         }
@@ -134,18 +138,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (!Pattern.compile("^[a-zA-Z0-9/\\s]+$").matcher(userDto.getAddress()).matches()) {
             throw new BadRequestException(FIELD_INVALID);
         }
-        Optional<User> optionalUser = userRepository.findUserById(id);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            boolean existUser = userRepository.findUserByEmail(userDto.getUserName()) != null;
-            if (!userDto.getUserName().equals(user.getUsername()) && existUser) {
-                throw new BadRequestException(VALUE_EXISTED);
-            }
-            User userSaved = UserMapper.toUpdateEntity(user, userDto);
-            userRepository.save(userSaved);
-        } else {
-            throw new BadRequestException(VALUE_NO_EXIST);
+        boolean existUser = userRepository.findUserByEmail(userDto.getUserName()) != null;
+        if (!userDto.getUserName().equals(user.getUsername()) && existUser) {
+            throw new BadRequestException(VALUE_EXISTED);
         }
+        User userSaved = UserMapper.toUpdateEntity(user, userDto);
+        userRepository.save(userSaved);
     }
 
     @Override
@@ -155,15 +153,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
         return user;
-    }
-
-
-    @Override
-    public boolean existsByUsername(String username) {
-        if (userRepository.existsByUserName(username)) {
-            throw new BadRequestException(VALUE_EXISTED);
-        }
-        return true;
     }
 
     @Override
@@ -189,11 +178,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public boolean isAuthorizedForCart(String cartId, String userId) {
         User user = userRepository.findByCartId(cartId);
-        if (user != null) {
-            return Objects.equals(userRepository.findByCartId(cartId).getId(), userId);
-        } else {
+        if (user == null) {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
+        return Objects.equals(user.getId(), userId);
     }
 }
 

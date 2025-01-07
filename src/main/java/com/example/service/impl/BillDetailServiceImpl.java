@@ -14,12 +14,7 @@ public class BillDetailServiceImpl implements BillDetailService {
     private BillDetailRepository billDetailRepository ;
 
     @Override
-    public void save(BillDetail billDetail) {
-        billDetailRepository.save(billDetail);
-    }
+    public void save(BillDetail billDetail) {billDetailRepository.save(billDetail);
 
-    @Override
-    public List<BillDetail> findByBillsId(String billId) {
-        return billDetailRepository.findByBillsId(billId);
     }
 }

@@ -21,7 +21,6 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    boolean existsByUsername(String username);
 
     UserDetails loadUserByUsername(String email);
 

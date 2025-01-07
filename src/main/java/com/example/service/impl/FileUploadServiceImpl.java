@@ -23,13 +23,13 @@ import static com.example.common.MessageConstant.FIELD_INVALID;
 
 @Service
 @RequiredArgsConstructor
+
 @Slf4j
 public class FileUploadServiceImpl implements FileUploadService {
 
     private final Cloudinary cloudinary;
-
     @Override
-    public List<Image> uploadFiles(MultipartFile[] files, Product product) throws IOException {
+    public List<Image> uploadFiles(MultipartFile[] files, Product product) {
         List<Image> uploadedImages = new ArrayList<>();
 
         try {
@@ -44,24 +44,23 @@ public class FileUploadServiceImpl implements FileUploadService {
                 image.setProducts(product);
                 uploadedImages.add(image);
             }
-        }catch (Exception e){
+        } catch (IOException e) {
             throw new BadRequestException(FIELD_INVALID);
         }
 
         return uploadedImages;
     }
+
     public void deleteImagesByUrls(List<String> imageUrls) {
         for (String imageUrl : imageUrls) {
+            String publicId = extractPublicId(imageUrl);
+            if (publicId == null) {
+                throw new BadRequestException("Url invalid " + imageUrl);
+            }
             try {
-                String publicId = extractPublicId(imageUrl);
-                if (publicId != null) {
-                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-                    log.info("Successfully deleted image with public ID: " + publicId);
-                } else {
-                    log.warn("Could not extract public ID from URL: " + imageUrl);
-                }
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             } catch (IOException e) {
-                log.error("Error deleting image from Cloudinary", e);
+                throw new BadRequestException("Error for removing imageUrl");
             }
         }
     }

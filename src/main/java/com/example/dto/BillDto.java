@@ -11,7 +11,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class BillDto {
   private String billId;
   private String userId;

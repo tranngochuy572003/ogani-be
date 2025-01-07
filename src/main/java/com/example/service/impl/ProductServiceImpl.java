@@ -15,7 +15,6 @@ import com.example.service.ProductService;
 import com.example.util.AppUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,32 +42,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addProduct(ProductDto productDto, MultipartFile[] files) {
-        if (AppUtil.containsSpecialCharacters(productDto.getCategory())
-                || AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
-        if (!Pattern.compile("\\d+").matcher(productDto.getInventory().toString()).matches()
-                || !Pattern.compile("\\d+").matcher(productDto.getPrice().toString()).matches()) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
-        if (productDto.getPrice() <= 0 || productDto.getInventory() < 0) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
-
+        Category category = categoryService.findCategoryByName(productDto.getCategory());
+        checkProductDtoValid(productDto, category);
         boolean existProduct = productRepository.findProductByNameProduct(productDto.getNameProduct()) != null;
         if (existProduct) {
             throw new BadRequestException(VALUE_EXISTED);
         }
+
+        Product product = ProductMapper.toCreateEntity(productDto);
+        product.setCategory(category);
+
         try {
-            Category category = categoryService.findCategoryByName(productDto.getCategory());
-            if (category == null) {
-                throw new BadRequestException(VALUE_NO_EXIST);
-            }
-            if (!category.isActive()) {
-                throw new BadRequestException(ITEM_UNACTIVED);
-            }
-            Product product = ProductMapper.toCreateEntity(productDto);
-            product.setCategory(category);
             List<Image> imageUrlList = fileUpload.uploadFiles(files, product);
             product.setImages(imageUrlList);
             productRepository.save(product);
@@ -87,92 +71,75 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void updateProduct(String id, ProductDto productDto, MultipartFile[] files) {
         Optional<Product> optionalProduct = productRepository.findById(id);
-        if (optionalProduct.isPresent()) {
-            Product product = optionalProduct.get();
-            if (AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
-                throw new BadRequestException(FIELD_INVALID);
-            }
-            boolean existProduct = productRepository.findProductByNameProduct(productDto.getNameProduct()) != null;
-            if (!product.getNameProduct().equals(productDto.getNameProduct()) && existProduct) {
-                throw new BadRequestException(VALUE_EXISTED);
-            }
-            if (productDto.getPrice() <= 0 || productDto.getInventory() < 0) {
-                throw new BadRequestException(FIELD_INVALID);
-            }
-            try {
-                if (AppUtil.containsSpecialCharacters(productDto.getCategory())) {
-                    throw new BadRequestException(FIELD_INVALID);
-                }
-                Category category = categoryService.findCategoryByName(productDto.getCategory());
-                if (category == null) {
-                    throw new BadRequestException(VALUE_NO_EXIST);
-                }
-                if (!category.isActive()) {
-                    throw new BadRequestException(ITEM_UNACTIVED);
-                }
-                Product productSaved = ProductMapper.toUpdateEntity(product, productDto);
-                productSaved.setCategory(category);
-                if (files != null && files.length > 0) {
-                    List<Image> imageUrlList = fileUpload.uploadFiles(files, productSaved);
-                    productSaved.setImages(imageUrlList);
-                }
-                productRepository.save(productSaved);
-            } catch (IOException e) {
-                throw new BadRequestException(FILE_UPLOAD_ERROR);
-            }
-            List<String> listToRemove = productDto.getImageList();
-            if (listToRemove != null) {
-                fileUpload.deleteImagesByUrls(listToRemove);
-                for (String url : listToRemove) {
-                    imageService.deleteByUrlImg(url);
-                }
-            }
-        } else {
+        if (optionalProduct.isEmpty()) {
             throw new NotFoundException(VALUE_NO_EXIST);
+        }
+        Product product = optionalProduct.get();
+        Category category = categoryService.findCategoryByName(productDto.getCategory());
+
+        checkProductDtoValid(productDto, category);
+        boolean existProduct = productRepository.findProductByNameProduct(productDto.getNameProduct()) != null;
+        if (!product.getNameProduct().equals(productDto.getNameProduct()) && existProduct) {
+            throw new BadRequestException(VALUE_EXISTED);
+        }
+
+        Product productSaved = ProductMapper.toUpdateEntity(product, productDto);
+        productSaved.setCategory(category);
+        try {
+            if (files != null && files.length > 0) {
+                List<Image> imageUrlList = fileUpload.uploadFiles(files, productSaved);
+                productSaved.setImages(imageUrlList);
+            }
+            productRepository.save(productSaved);
+        } catch (IOException e) {
+            throw new BadRequestException(FILE_UPLOAD_ERROR);
+        }
+        List<String> listToRemove = productDto.getImageList();
+        if (listToRemove != null) {
+            fileUpload.deleteImagesByUrls(listToRemove);
+            for (String url : listToRemove) {
+                imageService.deleteByUrlImg(url);
+            }
         }
     }
 
     @Override
     public ProductDto getProductById(String id) {
         Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            return ProductMapper.toDto(product.get());
-        } else {
+        if (product.isEmpty()) {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
+        return ProductMapper.toDto(product.get());
+
     }
 
     @Override
     public Product findProductById(String id) {
         Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            return product.get();
-        } else {
+        if (product.isEmpty()) {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
+        return product.get();
+
     }
 
     @Override
     public Product findProductByName(String name) {
         Product product = productRepository.findProductByNameProduct(name);
-        if (product != null) {
-            return product;
-        } else {
+        if (product == null) {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
+        return product;
     }
 
     @Override
     public ProductDto getProductByName(String name) {
-        if (AppUtil.containsSpecialCharacters(name)) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
         Product product = productRepository.findProductByNameProduct(name);
-        if (product != null) {
-            return ProductMapper.toDto(product);
-        } else {
+        if (product == null) {
             throw new NotFoundException(VALUE_NO_EXIST);
         }
+        return ProductMapper.toDto(product);
+
     }
 
     @Override
@@ -207,5 +174,28 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void save(Product product) {
         productRepository.save(product);
+    }
+
+    private void checkProductDtoValid(ProductDto productDto, Category category) {
+        if (AppUtil.containsSpecialCharacters(productDto.getCategory())
+                || AppUtil.containsSpecialCharacters(productDto.getNameProduct())) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+
+        if (!Pattern.compile("\\d+").matcher(productDto.getInventory()).matches()
+                || !Pattern.compile("\\d+").matcher(productDto.getPrice()).matches()) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+        long price = Long.parseLong(productDto.getPrice());
+        long inventory = Long.parseLong(productDto.getInventory());
+        if (price <= 0 || inventory < 0) {
+            throw new BadRequestException(FIELD_INVALID);
+        }
+        if (category == null) {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
+        if (!category.isActive()) {
+            throw new BadRequestException(ITEM_UNACTIVED);
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.service.impl;
 
-import com.example.dto.AuthorizationDto;
 import com.example.dto.AuthenticationDto;
+import com.example.dto.AuthorizationDto;
 import com.example.dto.RegisterDto;
 import com.example.dto.UserDto;
 import com.example.entity.User;
@@ -10,16 +10,11 @@ import com.example.mapper.UserMapper;
 import com.example.service.AuthService;
 import com.example.service.JwtTokenService;
 import com.example.service.UserService;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.common.MessageConstant.*;
 
@@ -38,8 +33,8 @@ public class AuthServiceImpl implements AuthService {
 
 
     public void register(RegisterDto registerDto) {
-        if(userService.existsByUsername(registerDto.getUserName())) {
-            if(!registerDto.getConfirmPassword().equals(registerDto.getPassword())) {
+        if (userService.findUserByEmail(registerDto.getUserName()) != null) {
+            if (!registerDto.getConfirmPassword().equals(registerDto.getPassword())) {
                 throw new BadRequestException(CONFIRM_PASSWORD_INCORRECT);
             }
             UserDto userDto = UserMapper.toUserDto(registerDto);
@@ -55,10 +50,10 @@ public class AuthServiceImpl implements AuthService {
             User user = userService.getUserByRefreshToken(authorizationHeader);
             if (user == null) {
                 throw new BadRequestException(TOKEN_INVALID);
-            } else {
-                user.setRefreshToken(null);
-                userService.save(user);
             }
+            user.setRefreshToken(null);
+            userService.save(user);
+
         }
     }
 
@@ -70,42 +65,29 @@ public class AuthServiceImpl implements AuthService {
         String jwtToken = createTokenByValidAccount(authenticationDto.getUserName(), authenticationDto.getPassword());
 
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                .toList();
 
         String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
-        try {
-            JWT jwt = JWTParser.parse(refreshToken);
-            JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-            String userName = (String) claimsSet.getClaim("userName");
-            User user = userService.findUserByEmail(userName);
-            if (!user.isActive()) {
-                throw new BadRequestException(ITEM_UNACTIVED);
-            }
-            user.setRefreshToken(refreshToken);
-            userService.save(user);
-            return new AuthorizationDto(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
-        } catch (ParseException e) {
-            throw new BadRequestException(TOKEN_INVALID);
-
+        User user = userService.findUserByEmail(authenticationDto.getUserName());
+        if (!user.isActive()) {
+            throw new BadRequestException(ITEM_UNACTIVED);
         }
+        user.setRefreshToken(refreshToken);
+        userService.save(user);
+        return new AuthorizationDto(jwtToken, refreshToken, user.getId(), user.getUsername(), user.isActive(), roles);
     }
 
     @Override
     public String createTokenByValidAccount(String email, String rawPassword) {
-        try {
-            User user = userService.findUserByEmail(email);
-            if (user != null) {
-                if (passwordEncoder.matches(rawPassword, user.getPassword())) {
-                    return jwtTokenService.createToken(email);
-                } else {
-                    throw new BadRequestException(EMAIL_PASSWORD_INVALID);
-                }
-            } else {
+        User user = userService.findUserByEmail(email);
+        if (user != null) {
+            boolean checkPassword = passwordEncoder.matches(rawPassword, user.getPassword());
+            if (!checkPassword) {
                 throw new BadRequestException(EMAIL_PASSWORD_INVALID);
             }
-        } catch (Exception e) {
-            throw new BadRequestException(UNAUTHORIZED);
-
+            return jwtTokenService.createToken(email);
+        } else {
+            throw new BadRequestException(EMAIL_PASSWORD_INVALID);
         }
     }
 }

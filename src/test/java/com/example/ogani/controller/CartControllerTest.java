@@ -26,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CartControllerTest {
+class CartControllerTest {
     @InjectMocks
     private CartController cartController;
     @Mock
@@ -76,7 +75,9 @@ public class CartControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
         objectMapper = new ObjectMapper();
-        user = new User("userId", LocalDateTime.now(), LocalDateTime.now(), "", "", "fullName1", "userName1", "password1", "address1", "phoneNumber1", UserRole.CUSTOMER, false,  null, null, null, null);
+        user = new User();
+        user.setId("id");
+        user.setRole(UserRole.ADMIN);
         cartDetailInfoDto = new CartDetailInfoDto("productId", "name", null, 10L, 100L, true);
         cartDetailInfoDtoList = new ArrayList<>();
         cartDetailInfoDtoList.add(cartDetailInfoDto);
